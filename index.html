@@ -1,71 +1,527 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
+<html lang="pt-BR"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Indicadores de Estoque — Painel de Controle</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<title>Indicadores de Estoque</title>
 <style>
-:root{
-  --bg1:#1c2540;--bg2:#0b0f19;--tx:#e8ecf3;--mut:#8d99b0;--pn:#121a2b;--pn2:#161e30;
-  --bd:#2c3a57;--bd2:#1f2b45;--trk:#1d2740;--nd:#f1f5f9;--nm:#cfd7e6;--tick:#6b7893;
-  --cell-gw:170px;--cell-fs:11px;
-  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)
-}
-@media (prefers-color-scheme:light){
-  :root:not([data-theme="dark"]){
-    --bg1:#eef2fb;--bg2:#dfe6f4;--tx:#18202f;--mut:#5b6780;--pn:#fff;--pn2:#f4f6fb;
-    --bd:#c6d0e3;--bd2:#d7deec;--trk:#dbe2f0;--nd:#1e293b;--nm:#2b3649;--tick:#8a96ae
-  }
-}
+:root{--bg1:#1c2540;--bg2:#0b0f19;--tx:#e8ecf3;--mut:#8d99b0;--pn:#121a2b;--pn2:#161e30;--bd:#2c3a57;--bd2:#1f2b45;--trk:#1d2740;--nd:#f1f5f9;--nm:#cfd7e6;--tick:#6b7893;
+ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg1:#eef2fb;--bg2:#dfe6f4;--tx:#18202f;--mut:#5b6780;--pn:#fff;--pn2:#f4f6fb;--bd:#c6d0e3;--bd2:#d7deec;--trk:#dbe2f0;--nd:#1e293b;--nm:#2b3649;--tick:#8a96ae}}
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%}
+html,body{height:100%;margin:0}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{
-  display:flex;flex-direction:column;
-  background:radial-gradient(circle at 50% 0,var(--bg1),var(--bg2) 70%);
-  color:var(--tx);font:14px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  overflow-y:auto;overflow-x:hidden
-}
-
-/* Cabeçalho Superior */
-#bar{
-  display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 16px;
-  border-bottom:1px solid var(--bd2);background:rgba(18,26,43,0.85);backdrop-filter:blur(8px)
-}
-.brand{display:flex;flex-direction:column;gap:1px;margin-right:12px}
-h1{font-size:16px;margin:0;white-space:nowrap;display:flex;align-items:center;gap:6px}
-.version-tag{
-  font-size:10px;font-weight:600;color:#38bdf8;background:rgba(56,189,248,0.12);
-  border:1px solid rgba(56,189,248,0.3);padding:1px 6px;border-radius:4px
-}
+body{display:flex;flex-direction:column;background:radial-gradient(circle at 50% 0,var(--bg1),var(--bg2) 70%);color:var(--tx);font:14px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+#bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--bd2)}
+h1{font-size:17px;margin:0 8px 0 0;white-space:nowrap}
 .sub{color:var(--mut);font-size:11px}
-
-button,select,input{
-  font:inherit;border-radius:8px;border:1px solid var(--bd);background:var(--pn2);
-  color:var(--tx);padding:6px 12px
-}
+button,select,input{font:inherit;border-radius:8px;border:1px solid var(--bd);background:var(--pn2);color:var(--tx);padding:7px 12px}
 button{cursor:pointer;background:#3b6ef6;border-color:#3b6ef6;color:#fff;font-weight:700}
-button:hover{opacity:0.9}
 button.g{background:var(--pn2);color:var(--tx);border-color:var(--bd);font-weight:500}
-button.up{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:4px 10px;font-weight:600}
-button.up small{font-size:9.5px;font-weight:400;color:var(--mut);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+button.up{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:5px 12px;font-weight:600}
+button.up small{font-size:10px;font-weight:400;color:var(--mut);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 button.up.ok{border-color:#22c55e}
-
-#q{width:160px}#lim{width:54px;padding:5px 6px}
+#q{width:170px}#lim{width:58px;padding:7px 6px}
 .seg{display:flex}.seg button{border-radius:0;white-space:nowrap}.seg button:first-child{border-radius:8px 0 0 8px}.seg button:last-child{border-radius:0 8px 8px 0;border-left:0}
 .seg button.g.on{background:#3b6ef6;color:#fff;border-color:#3b6ef6}
 .chip{flex-shrink:0;white-space:nowrap}.chip small{color:var(--mut);font-weight:500}
-
-/* Banner Informativo */
-#bannerStatus{
-  padding:6px 16px;font-size:11.5px;font-weight:600;display:flex;align-items:center;
-  justify-content:space-between;border-bottom:1px solid var(--bd2);
-  background:#0f172a;color:#94a3b8;flex-wrap:wrap;gap:8px
-}
-
-#main{flex:1;min-height:0;padding:10px 14px;display:flex;flex-direction:column}
+#home{flex:1;min-height:0;overflow-y:auto}
+.hbox{max-width:780px;margin:0 auto;padding:14px 4px 24px;display:flex;flex-direction:column;gap:22px}
+.hbox h2{margin:0 0 10px;font-size:15px}.hbox .sub{margin:0 0 10px}
+.opts{display:flex;gap:12px;flex-wrap:wrap}
+.opt{flex:1;min-width:230px;text-align:left;background:var(--pn);color:var(--tx);border:2px solid var(--bd);border-radius:14px;padding:18px;font-weight:600;display:flex;flex-direction:column;gap:6px}
+.opt.on{border-color:#3b6ef6;box-shadow:0 0 0 1px #3b6ef6}.opt b{font-size:16px}.opt span{color:var(--mut);font-weight:400;font-size:12px}
+#hLoc{display:flex;flex-wrap:wrap;gap:8px;max-height:300px;overflow-y:auto;padding:2px}
+#go{font-size:16px;padding:12px 22px;align-self:flex-start}
+#res{flex:1;min-height:0;display:flex;flex-direction:column}
+.rb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:0 2px 8px}
+#rLoc{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;flex-wrap:nowrap}
+#list{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:2px 2px 10px}
+.gh{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin:10px 4px 0}
+.row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(140px,2fr) minmax(110px,auto);gap:16px;align-items:center;background:var(--pn);border:1px solid var(--bd2);border-left:4px solid var(--c);border-radius:12px;padding:10px 14px}
+.rd{min-width:0}.rd b{display:block;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rd small{color:var(--mut);font-size:11px}
+.bar{position:relative;height:12px;border-radius:99px;background:var(--trk)}
+.bar>i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:99px;background:var(--c);transition:width .8s cubic-bezier(.2,1,.3,1)}
+.bar>u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--tx);opacity:.55;border-radius:1px}
+.rv{text-align:right;font-weight:800;font-size:16px;white-space:nowrap}.rv em{font-style:normal;color:var(--c)}.rv span{color:var(--mut);font-weight:400}
+.rv small{display:block;font-size:10px;font-weight:700;color:var(--c)}
+@media(max-width:640px){.row{grid-template-columns:1fr auto;grid-template-areas:"d v" "b b";gap:8px 12px}.rd{grid-area:d}.rv{grid-area:v}.bar{grid-area:b}#q{width:100%}}
+.chip{cursor:pointer;display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:var(--pn2);border:1px solid var(--bd);font-weight:600;user-select:none}
+.chip i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.chip.on{border-color:var(--c);box-shadow:0 0 0 1px var(--c)}
+.sp{flex:1}
+#main{flex:1;min-height:0;padding:10px 12px;display:flex;flex-direction:column}
+#grid{display:grid;flex:1;min-height:0;gap:6px}
+.cell{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;min-width:0;background:var(--pn);border:1px solid var(--bd2);border-radius:12px;padding:4px}
+.cell svg{width:var(--gw);height:auto;display:block}
+.nm{font-size:var(--fs);text-align:center;line-height:1.15;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--nm);padding:0 4px}
+.nd{transition:transform 1.1s cubic-bezier(.2,1.3,.4,1)}
 #drops{display:flex;gap:18px;margin:auto;flex-wrap:wrap;justify-content:center}
-.drop{width:300px;text-align:center;border:2px dashed var(--bd);border-radius:16px;padding:36px 20px;color:var(--mut);cursor:pointer}
+.drop{width:300px;text-align:center;border:2px dashed var(--bd);border-radius:16px;padding:40px 24px;color:var(--mut);cursor:pointer}
 .drop.over{border-color:#3b6ef6}.drop h2{color:var(--tx);margin:0 0 6px;font-size:16px}.drop p{margin:4px 0}
-.drop b{display:inline-block;background:#3b6ef6;color:#fff;border-radius:99px;padding:2px 10px;margin-bottom:1
+.drop b{display:inline-block;background:#3b6ef6;color:#fff;border-radius:99px;padding:2px 10px;margin-bottom:10px}
+#note{font-size:12px;color:#f59e0b;padding:0 4px 6px}
+.hide{display:none!important}
+input[type=checkbox]{padding:0;width:16px;height:16px;vertical-align:middle;margin-right:4px}
+#inv,#rep{flex:1;min-height:0;display:flex;flex-direction:column}
+#iLoc{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;flex-wrap:nowrap}
+#iProg{display:flex;align-items:center;gap:12px;padding:0 4px 8px}#iProg .bar{flex:1}#iProg .bar>i{transition:width .4s}
+#ilist{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:2px 2px 10px}
+.irow{grid-template-columns:minmax(0,2fr) 90px 90px 120px;cursor:pointer}.irow:hover{background:var(--pn2)}
+.iv{text-align:right}.iv small{display:block;font-size:9px;color:var(--mut);font-weight:700;letter-spacing:.05em}.iv b{font-size:16px}
+@media(max-width:640px){.irow{grid-template-columns:1fr 1fr 1fr}.irow .rd{grid-column:1/-1}}
+#mdl{position:fixed;inset:0;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50;overflow-y:auto}
+.mbox{background:var(--pn);border:1px solid var(--bd);border-radius:16px;padding:18px;width:100%;max-width:440px;display:flex;flex-direction:column;gap:12px}
+.mbox b#mT{font-size:16px;display:block}.mbox small{color:var(--mut);font-size:12px}
+.mbox label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--mut);font-weight:600}
+.mbox input{font-size:18px;color:var(--tx)}#mO{font-size:14px}
+#mSis{font-size:14px;padding:8px 12px;border-radius:10px;background:var(--pn2)}#mDif{min-height:22px;font-weight:700;font-size:14px}
+.mb{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.paper{max-width:1000px;margin:0 auto;padding:6px 4px 28px;display:flex;flex-direction:column;gap:18px;width:100%}
+.paper h2{margin:0;font-size:20px}.paper h3{margin:0 0 8px;font-size:14px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.meta label{display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--mut);font-weight:600}.meta div{font-size:13px;color:var(--tx)}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.kp div{background:var(--pn);border:1px solid var(--bd2);border-top:3px solid var(--c);border-radius:10px;padding:10px 12px}.kp b{display:block;font-size:22px;color:var(--c)}.kp span{font-size:11px;color:var(--mut)}
+.rt{width:100%;border-collapse:collapse;font-size:12px}.rt th,.rt td{border-bottom:1px solid var(--bd2);padding:6px 8px;text-align:left;vertical-align:top}
+.rt th{color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.05em}.rt .n{text-align:right;white-space:nowrap}.rt small{color:var(--mut)}
+.sig{display:flex;gap:40px;margin-top:30px}.sig div{flex:1;border-top:1px solid var(--tx);padding-top:4px;font-size:11px;color:var(--mut)}
+@media print{
+ html:root:not([data-p]){--bg1:#fff;--bg2:#fff;--tx:#000;--mut:#444;--pn:#fff;--pn2:#fff;--bd:#bbb;--bd2:#ccc;--trk:#ddd}
+ html,body{height:auto!important;overflow:visible!important;display:block!important;background:#fff!important}
+ #bar,.noprint,#mdl{display:none!important}
+ #main{display:block!important;padding:0!important}
+ #rep,#repBody{display:block!important;overflow:visible!important}
+ .rt tr{break-inside:avoid}.meta input{border:0;padding:0;background:none;color:#000}
+}
+.pub .up,.pub .lmp,.pub #bPub,.pub #limL,.pub #oInv{display:none!important}
+#pubInfo{align-self:center}
+@media(max-width:900px){
+ #res{overflow-y:auto;-webkit-overflow-scrolling:touch}
+ #grid,#list{flex:none;min-height:auto;overflow:visible}
+ #grid{align-content:start;grid-auto-rows:min-content}
+ .cell{padding:10px 4px 12px;gap:4px}
+ .nm{-webkit-line-clamp:3}
+ #bar{padding:8px 12px}#main{padding:8px}
+ #res>*{flex-shrink:0}
+ #res .rb select{flex:1 1 44%;min-width:0}
+ #res .rb .sp{display:none}
+}
+</style>
+</head>
+<body>
+<div id="bar">
+  <h1>⛽ Indicadores de Estoque</h1>
+  <span class="sub" id="pubInfo"></span>
+  <input type="file" id="file" accept=".xlsx,.xls,.csv" class="hide">
+  <button class="g up" id="bSaldo" onclick="pick('saldo')">1 · Saldo geral<small id="tSaldo">não carregado</small></button>
+  <button class="g up" id="bBase" onclick="pick('base')">2 · Base dos indicadores<small id="tBase">não carregado</small></button>
+  <span class="sp"></span>
+  <button id="bPub" class="hide" onclick="publicar()" title="Gera o arquivo index.html para subir no GitHub Pages">🌐 Gerar página para publicar</button>
+  <button class="g lmp" onclick="limpar()">Limpar</button>
+</div>
+<div id="main">
+  <div id="drops">
+    <div class="drop" data-slot="saldo"><b>1</b><h2>Saldo geral de estoque</h2><p>Arraste ou clique (.xlsx, .xls, .csv)</p><p class="sub">Colunas: Código, Descrição, Saldo físico, Estoque/local</p></div>
+    <div class="drop" data-slot="base"><b>2</b><h2>Base de dados dos indicadores</h2><p>Arraste ou clique (.xlsx, .xls, .csv)</p><p class="sub">Só os itens desta lista viram indicadores. Colunas: Código ou Descrição; opcionais: Estoque mínimo, Estoque máximo, Categoria</p></div>
+  </div>
+
+  <!-- TELA INICIAL -->
+  <div id="home" class="hide"><div class="hbox">
+    <div><h2>1 · Como você quer ver?</h2>
+      <div class="opts">
+        <button class="opt" id="oRel" onclick="setView('rel')"><b>🕒 Relógios</b><span>Um velocímetro por item, ideal para painel de TV.</span></button>
+        <button class="opt" id="oLst" onclick="setView('lst')"><b>☰ Lista</b><span>Uma linha por item com barra de evolução e saldo / mínimo.</span></button>
+        <button class="opt" id="oInv" onclick="setView('inv')"><b>📋 Inventário</b><span>Digite a quantidade real da prateleira de cada item e gere o relatório de auditoria.</span></button>
+      </div></div>
+    <div><h2>2 · De quais locais de estoque?</h2>
+      <p class="sub" id="hCnt"></p>
+      <div id="hLoc"></div></div>
+    <button id="go" onclick="abrir()">Ver indicadores →</button>
+  </div></div>
+
+  <!-- RESULTADO -->
+  <div id="res" class="hide">
+    <div class="rb">
+      <button class="g" onclick="inicio()">← Início</button>
+      <span id="segR"></span>
+      <input id="q" placeholder="Buscar…">
+      <select id="cat"></select>
+      <select id="ord"><option value="cat">Ordem: por categoria</option><option value="crit">Ordem: mais críticos primeiro</option></select>
+      <select id="esc"><option value="cat">Escala: por categoria</option><option value="all">Escala: geral</option></select>
+      <select id="cols" class="hide" title="Tamanho dos relógios no celular"><option value="auto">Relógios: automático</option><option value="1">1 por linha (grande)</option><option value="2">2 por linha</option><option value="3">3 por linha (pequeno)</option></select>
+      <label class="sub" id="limL" title="Usado quando o item não tem estoque mínimo">Mín. padrão <input id="lim" type="number" min="0" value="10"></label>
+      <span class="sp"></span><span class="sub" id="info"></span>
+    </div>
+    <div id="rLoc"></div>
+    <div class="rb" id="chips"></div>
+    <div id="note" class="hide"></div>
+    <div id="grid" class="hide"></div>
+    <div id="list" class="hide"></div>
+  </div>
+
+  <!-- INVENTÁRIO -->
+  <div id="inv" class="hide">
+    <div class="rb">
+      <button class="g" onclick="inicio()">← Início</button>
+      <span id="segI"></span>
+      <input id="iq" placeholder="Buscar…">
+      <select id="icat"></select>
+      <label class="sub" title="Esconde o saldo do sistema para o contador não ser influenciado"><input type="checkbox" id="blind">Contagem cega</label>
+      <span class="sp"></span>
+      <button class="g" onclick="zerarCont()">Zerar contagens</button>
+      <button onclick="relatorio()">📄 Relatório de auditoria</button>
+    </div>
+    <div id="iLoc"></div>
+    <div id="iProg"></div>
+    <div class="rb" id="iChips"></div>
+    <div id="ilist"></div>
+  </div>
+
+  <!-- RELATÓRIO -->
+  <div id="rep" class="hide">
+    <div class="rb noprint">
+      <button class="g" onclick="scr='inv';paint()">← Voltar ao inventário</button>
+      <span class="sp"></span>
+      <button class="g" onclick="exportar()">⬇ Exportar Excel</button>
+      <button onclick="window.print()">🖨 Imprimir / PDF</button>
+    </div>
+    <div id="repBody" style="flex:1;min-height:0;overflow-y:auto"></div>
+  </div>
+</div>
+
+<!-- BOX DE CONTAGEM -->
+<div id="mdl" class="hide"><div class="mbox">
+  <div><b id="mT"></b><small id="mS"></small></div>
+  <div id="mSis"></div>
+  <label>Quantidade contada na prateleira<input id="mQ" inputmode="decimal" autocomplete="off" placeholder="0"></label>
+  <div id="mDif"></div>
+  <label>Observação (opcional)<input id="mO" autocomplete="off" placeholder="Ex.: caixa avariada, item em outro local…"></label>
+  <div class="mb"><button class="g" onclick="mFechar()">Cancelar</button><button class="g" onclick="mLimpar()">Limpar</button><button class="g" onclick="mSalvar(false)">Salvar</button><button onclick="mSalvar(true)">Salvar e próximo →</button></div>
+</div></div>
+<script>window.__PUB={"saldo":{"r":[{"cod":"EXPTMAPP-000166","desc":"CONECTOR MACHO RJ45 CAT5E ITB","un":"UN","saldo":900,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-000167","desc":"CONECTOR MACHO RJ45 CAT6 ITB","un":"UN","saldo":1010,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-000168","desc":"PARAFUSO PHILLIPS 3,5MM X 16MM","un":"UN","saldo":3120,"min":1300,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-000169","desc":"PARAFUSO CHIPBOARD CHATA PARA MADEIRA 4,5X35MM PHI","un":"UN","saldo":1998,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-000196","desc":"MTS CABO DE REDE CAT6-SOHOPLUS-FURUKAWA AZ","un":"M","saldo":1381,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-000200","desc":"MTS CABO DE REDE CAT5E-NEXANS AZ","un":"M","saldo":0,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-000433","desc":"FITA CREPE PRETA 48MM X 50M GERAL","un":"UN","saldo":15,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-000513","desc":"MTS CABO DE REDE CFTV CONDUTTI PT","un":"M","saldo":1152,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-000602","desc":"MTS CABO DE REDE CFTV CONDUTTI AZ","un":"M","saldo":233,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-000633","desc":"PATCH CORD AZ CAT5E 0,5M","un":"UN","saldo":182,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-000663","desc":"FITA ISOLANTE 18X10M PRETA GERAL","un":"UN","saldo":20,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-000828","desc":"FITA CREPE 48MM X 50M GERAL","un":"UN","saldo":11,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001114","desc":"SACOLA PLASTICA GERAL","un":"UN","saldo":1000,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001336","desc":"FITA DUPLA FACE ESPUMA  19MMX25M GERAL","un":"UN","saldo":4,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001386","desc":"FITA TRANSPARENTE 45MM X 40M - GERAL","un":"UN","saldo":17,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001405","desc":"MTS CABO DE REDE CAT6 LANDUTTI AZ","un":"M","saldo":0,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001432","desc":"MTS CABO DE REDE CAT5E-NEXANS BR","un":"M","saldo":63,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001435","desc":"MTS CABO DE REDE CAT5E-LAN MAXX AZ","un":"M","saldo":423,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001448","desc":"MTS CABO DE REDE CFTV ADCONNECT AZ","un":"M","saldo":2734,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001467","desc":"FITA DUPLA FACE VERDE GERAL","un":"UN","saldo":0,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001776","desc":"ABRACADEIRA DE NYLON 100X2,5MM BR GERAL","un":"UN","saldo":380,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001777","desc":"ABRACADEIRA DE NYLON 100X2,5MM PT GERAL","un":"UN","saldo":300,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001778","desc":"ABRACADEIRA DE NYLON 200X4,8MM BR GERAL","un":"UN","saldo":538,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001779","desc":"ABRACADEIRA DE NYLON 200X4,8MM PT GERAL","un":"UN","saldo":473,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001780","desc":"ABRACADEIRA DE NYLON 300X4,8MM BR GERAL","un":"UN","saldo":567,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001781","desc":"ABRACADEIRA DE NYLON 300X4,8MM PT GERAL","un":"UN","saldo":130,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001782","desc":"ABRACADEIRA DE NYLON 500X7,6MM BR GERAL","un":"UN","saldo":150,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001840","desc":"MTS CABO DE REDE CFTV ADCONNECT PT","un":"M","saldo":205,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001870","desc":"ABRACADEIRA DE NYLON 500X7,6MM PT GERAL","un":"UN","saldo":100,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001907","desc":"MTS CABO DE REDE CAT5E LANDUTTI AZ","un":"M","saldo":5421,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001963","desc":"MTS CABO DE REDE CFTV LINK+ AZ","un":"M","saldo":1754,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-001970","desc":"CONECTOR MACHO RJ45 CAT5E GERAL","un":"UN","saldo":581,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-002011","desc":"CONECTOR MACHO RJ45 CAT6 GERAL","un":"UN","saldo":286,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-002022","desc":"MTS CABO DE REDE CAT5E LANDUTTI PT","un":"M","saldo":915,"min":0,"loc":"ALMOX ECN"},{"cod":"EXPTMAPP-002023","desc":"MTS CABO DE REDE CAT6 - MEGATRON - AZ","un":"M","saldo":1982,"min":0,"loc":"ALMOX ECN"}],"m":{"nome":"saldos-estoque-fisico 091126.xlsx","em":"09/11/2026, 17:17:36","n":26212,"flt":" · 63 local(is)"}},"base":{"r":[{"cod":"EXPTMAPP-000196","desc":"MTS CABO DE REDE CAT6-SOHOPLUS-FURUKAWA AZ","min":1525,"max":0,"cat":""},{"cod":"EXPTMAPP-000200","desc":"MTS CABO DE REDE CAT5E-NEXANS AZ","min":0,"max":0,"cat":""},{"cod":"EXPTMAPP-000513","desc":"MTS CABO DE REDE CFTV CONDUTTI PT","min":0,"max":0,"cat":""},{"cod":"EXPTMAPP-000602","desc":"MTS CABO DE REDE CFTV CONDUTTI AZ","min":0,"max":0,"cat":""},{"cod":"EXPTMAPP-001405","desc":"MTS CABO DE REDE CAT6 LANDUTTI AZ","min":0,"max":0,"cat":""},{"cod":"EXPTMAPP-001432","desc":"MTS CABO DE REDE CAT5E-NEXANS BR","min":0,"max":0,"cat":""},{"cod":"EXPTMAPP-001435","desc":"MTS CABO DE REDE CAT5E-LAN MAXX AZ","min":0,"max":0,"cat":""},{"cod":"EXPTMAPP-001448","desc":"MTS CABO DE REDE CFTV ADCONNECT AZ","min":0,"max":0,"cat":""},{"cod":"EXPTMAPP-001840","desc":"MTS CABO DE REDE CFTV ADCONNECT PT","min":0,"max":0,"cat":""},{"cod":"EXPTMAPP-001907","desc":"MTS CABO DE REDE CAT5E LANDUTTI AZ","min":0,"max":0,"cat":""},{"cod":"EXPTMAPP-001963","desc":"MTS CABO DE REDE CFTV LINK+ AZ","min":3050,"max":0,"cat":""},{"cod":"EXPTMAPP-002022","desc":"MTS CABO DE REDE CAT5E LANDUTTI PT","min":0,"max":0,"cat":""},{"cod":"EXPTMAPP-002023","desc":"MTS CABO DE REDE CAT6 - MEGATRON - AZ","min":0,"max":0,"cat":""},{"cod":"EXPTMAPP-000166","desc":"CONECTOR MACHO RJ45 CAT5E ITB","min":0,"max":0,"cat":""},{"cod":"EXPTMAPP-000167","desc":"CONECTOR MACHO RJ45 CAT6 ITB","min":500,"max":0,"cat":""},{"cod":"EXPTMAPP-001970","desc":"CONECTOR MACHO RJ45 CAT5E GERAL","min":1000,"max":0,"cat":""},{"cod":"EXPTMAPP-002011","desc":"CONECTOR MACHO RJ45 CAT6 GERAL","min":1000,"max":0,"cat":""},{"cod":"EXPTMAPP-000433","desc":"FITA CREPE PRETA 48MM X 50M GERAL","min":15,"max":0,"cat":""},{"cod":"EXPTMAPP-000663","desc":"FITA ISOLANTE 18X10M PRETA GERAL","min":10,"max":0,"cat":""},{"cod":"EXPTMAPP-000828","desc":"FITA CREPE 48MM X 50M GERAL","min":15,"max":0,"cat":""},{"cod":"EXPTMAPP-001336","desc":"FITA DUPLA FACE ESPUMA  19MMX25M GERAL","min":10,"max":0,"cat":""},{"cod":"EXPTMAPP-001386","desc":"FITA TRANSPARENTE 45MM X 40M - GERAL","min":15,"max":0,"cat":""},{"cod":"EXPTMAPP-001467","desc":"FITA DUPLA FACE VERDE GERAL","min":1,"max":0,"cat":""},{"cod":"EXPTMAPP-000168","desc":"PARAFUSO PHILLIPS 3,5MM X 16MM","min":1300,"max":0,"cat":""},{"cod":"EXPTMAPP-000169","desc":"PARAFUSO CHIPBOARD CHATA PARA MADEIRA 4,5X35MM PHI","min":500,"max":0,"cat":""},{"cod":"EXPTMAPP-001776","desc":"ABRACADEIRA DE NYLON 100X2,5MM BR GERAL","min":200,"max":0,"cat":""},{"cod":"EXPTMAPP-001777","desc":"ABRACADEIRA DE NYLON 100X2,5MM PT GERAL","min":200,"max":0,"cat":""},{"cod":"EXPTMAPP-001778","desc":"ABRACADEIRA DE NYLON 200X4,8MM BR GERAL","min":300,"max":0,"cat":""},{"cod":"EXPTMAPP-001779","desc":"ABRACADEIRA DE NYLON 200X4,8MM PT GERAL","min":300,"max":0,"cat":""},{"cod":"EXPTMAPP-001780","desc":"ABRACADEIRA DE NYLON 300X4,8MM BR GERAL","min":300,"max":0,"cat":""},{"cod":"EXPTMAPP-001781","desc":"ABRACADEIRA DE NYLON 300X4,8MM PT GERAL","min":300,"max":0,"cat":""},{"cod":"EXPTMAPP-001782","desc":"ABRACADEIRA DE NYLON 500X7,6MM BR GERAL","min":100,"max":0,"cat":""},{"cod":"EXPTMAPP-001870","desc":"ABRACADEIRA DE NYLON 500X7,6MM PT GERAL","min":100,"max":0,"cat":""},{"cod":"EXPTMAPP-000633","desc":"PATCH CORD AZ CAT5E 0,5M","min":800,"max":0,"cat":""},{"cod":"EXPTMAPP-001114","desc":"SACOLA PLASTICA GERAL","min":0,"max":0,"cat":""}],"m":{"nome":"Base.xlsx","em":"09/11/2026, 17:16:22","n":35,"flt":""}},"loc":["ALMOX ECN"],"view":"rel","lim":"10","em":"09/11/2026, 17:17:55"};</script>
+<script>
+const PRISTINE='<!DOCTYPE html>\n'+document.documentElement.outerHTML; // cópia limpa da página, usada para gerar a versão publicável
+const PUB=window.__PUB||null; // preenchido só na página publicada
+const $=id=>document.getElementById(id);
+if(PUB)document.body.classList.add('pub');
+const fmt=n=>(n??0).toLocaleString('pt-BR',{maximumFractionDigits:2});
+const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' ');
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=v=>{if(typeof v==='number')return v;const s=String(v??'').trim();if(!s)return null;const x=parseFloat(s.includes(',')?s.replace(/\./g,'').replace(',','.'):s);return isNaN(x)?null:x};
+const ck=v=>String(v??'').trim().toLowerCase().replace(/^0+(?=.)/,'');
+const COR={ok:'#22c55e',warn:'#f59e0b',low:'#ef4444',zero:'#ef4444',nf:'#64748b'},NOME={ok:'Normal',warn:'Atenção (até 10% acima do mínimo)',low:'No mínimo ou abaixo',zero:'Zerado',nf:'Sem saldo'};
+const MAP={cod:['codigo do produto','codigo','cod','sku','codigo produto','cod produto'],desc:['descricao','descricao do produto','produto','nome','item'],un:['unidade','un','und'],saldo:['saldo fisico','saldo','quantidade','qtd','saldo atual'],min:['estoque minimo','minimo','min'],max:['estoque maximo','maximo','max','meta','capacidade'],cat:['categoria','grupo','familia','linha'],almox:['estoque/local','estoque / local','estoque local','local de estoque','local estoque','almoxarifado','deposito','armazem']};
+const S={saldo:null,base:null},KEY=k=>k==='saldo'?'indEstoqueV4_saldo':'indEstoque_'+k,PK=PUB?'indEstoquePub:'+location.pathname:'indEstoqueV4_prefs';
+let stF='todos',slotAtual='saldo',scr='home',view='rel',selLoc=null,iF='todos',CONT={},MET={nome:'',resp:'',blind:false};const CK='indEstoqueV5_cont';
+// classifica cabos nos 6 grupos unificados (retorna null se não for um dos grupos)
+const GRUPOS=['MTS CABO CAT5E AZ','MTS CABO CAT5E PT','MTS CABO CAT6 SOHO PLUS','MTS CABO CAT6 TODOS EXCETO SOHO PLUS','MTS CABO CFTV PT','MTS CABO CFTV AZ'];
+function grupoCabo(d){
+ const t=norm(d);if(!/\bcabo\b/.test(t))return null;
+ const az=/\b(az|azul)\b/.test(t),pt=/\b(pt|preto)\b/.test(t);
+ let n=null;
+ if(/\bcat\s?5e?\b/.test(t))n=az?GRUPOS[0]:pt?GRUPOS[1]:null;
+ else if(/\bcat\s?6[a-z]?\b/.test(t))n=/soho\s*plus/.test(t)?GRUPOS[2]:GRUPOS[3];
+ else if(/\bcftv\b/.test(t))n=pt?GRUPOS[4]:az?GRUPOS[5]:null;
+ return n?{nome:n,ord:GRUPOS.indexOf(n)}:null}
+function agrupar(rows){
+ const G=new Map(),out=[];
+ for(const x of rows){const g=grupoCabo(x.desc);if(!g){out.push(x);continue}
+  let o=G.get(g.nome);if(!o){o={cod:'',desc:g.nome,un:'MTS',saldo:0,min:0,max:0,cat:'Cabos',nf:true,grp:true,ord:g.ord,n:0};G.set(g.nome,o)}
+  o.saldo+=x.saldo;o.min+=x.min;o.max+=x.max;o.nf=o.nf&&x.nf;o.n++}
+ for(const o of G.values())o.cod=o.n+' item(ns) unificados';
+ return out.concat([...G.values()])}
+function categoria(d){const t=norm(d).replace(/^mts\s+/,'');
+ for(const [a,b] of [['cabo','Cabos'],['conector','Conectores'],['fita','Fitas'],['parafuso','Parafusos'],['abracadeira','Abraçadeiras']])if(t.startsWith(a))return b;
+ const w=t.split(' ')[0]||'outros';return w[0].toUpperCase()+w.slice(1)}
+function pick(s){slotAtual=s;$('file').click()}
+function processar(data,nome,slot){
+ let aoa;try{const wb=XLSX.read(data,{type:'array'});aoa=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''})}catch(e){return alert('Não consegui ler o arquivo.')}
+ const names=Object.values(MAP).flat();
+ let h=aoa.findIndex((r,i)=>i<15&&r.some(c=>names.includes(norm(c))));if(h<0)h=0;
+ const heads=(aoa[h]||[]).map(String),body=aoa.slice(h+1).filter(r=>r.some(c=>c!==''));
+ if(!body.length)return alert('Planilha vazia.');
+ const f={};for(const k in MAP){const i=heads.findIndex(c=>MAP[k].includes(norm(c)));f[k]=i}
+ const g=(r,k)=>f[k]>=0?r[f[k]]:'';
+ if(f.cod<0&&f.desc<0)return alert('Não encontrei a coluna "Código" nem "Descrição".');
+ if(slot==='saldo'&&f.saldo<0)return alert('Não encontrei a coluna "Saldo físico".');
+ let src=body;
+let r;
+ if(slot==='saldo')r=src.map(x=>({cod:String(g(x,'cod')).trim(),desc:String(g(x,'desc')).trim(),un:String(g(x,'un')).trim(),saldo:num(g(x,'saldo'))??0,min:num(g(x,'min'))||0,loc:f.almox>=0?String(g(x,'almox')).trim():''}));
+ else r=body.map(x=>({cod:String(g(x,'cod')).trim(),desc:String(g(x,'desc')).trim(),min:num(g(x,'min'))||0,max:num(g(x,'max'))||0,cat:String(g(x,'cat')).trim()}));
+ r=r.filter(x=>x.cod||x.desc);
+ const nl=slot==='saldo'&&f.almox>=0?new Set(r.map(x=>x.loc)).size:0;
+ const m={nome,em:new Date().toLocaleString('pt-BR'),n:r.length,flt:nl?` · ${nl} local(is)`:''};
+ S[slot]={r,m};
+ try{localStorage.setItem(KEY(slot),JSON.stringify(S[slot]))}catch(e){}
+ if(slot==='saldo')fixSel();
+ paint()}
+// cruza a base dos indicadores com o saldo geral
+function itens(){return agrupar(itens0())}
+function itens0(){
+ const sal=S.saldo?S.saldo.r.filter(s=>!selLoc||selLoc.has(s.loc||'Sem local')):[],byC=new Map(),byD=new Map();
+ for(const s of sal){ // soma saldos repetidos (vários depósitos/linhas)
+  const add=(m,k)=>{if(!k)return;const o=m.get(k);if(o){o.saldo+=s.saldo;o.min=o.min||s.min}else m.set(k,{...s})};
+  add(byC,ck(s.cod));add(byD,norm(s.desc))}
+ // evita contar duas vezes: usa índice por código e, se faltar, por descrição
+ const uniq=new Map();for(const s of sal){const k=ck(s.cod)||norm(s.desc);const o=uniq.get(k);if(o){o.saldo+=s.saldo;o.min=o.min||s.min}else uniq.set(k,{...s})}
+ const byCode=new Map(),byDesc=new Map();for(const s of uniq.values()){if(ck(s.cod))byCode.set(ck(s.cod),s);if(s.desc)byDesc.set(norm(s.desc),s)}
+ if(!S.base)return sal.length?[...uniq.values()].map(s=>({cod:s.cod,desc:s.desc,un:s.un,saldo:s.saldo,min:s.min,max:0,cat:categoria(s.desc),nf:false})):[];
+ return S.base.r.map(b=>{const s=(ck(b.cod)&&byCode.get(ck(b.cod)))||(b.desc&&byDesc.get(norm(b.desc)))||null;
+  const desc=b.desc||(s&&s.desc)||b.cod;
+  return{cod:b.cod||(s&&s.cod)||'',desc,un:s?s.un:'',saldo:s?s.saldo:0,min:b.min||(s&&s.min)||0,max:b.max||0,cat:b.cat||categoria(desc),nf:!s}})}
+const lim=()=>num($('lim').value)||0,ref=x=>x.min>0?x.min:lim();
+const st=x=>x.nf?'nf':x.saldo<=0?'zero':x.saldo<=ref(x)?'low':x.saldo<=ref(x)*1.1?'warn':'ok';
+// ponto no arco: f=0 (E, esquerda) ... f=1 (F, direita)
+const P=(f,r)=>{const a=Math.PI*(1-f);return[(100+r*Math.cos(a)).toFixed(1),(100-r*Math.sin(a)).toFixed(1)]};
+const arc=(f1,f2,r,c,w)=>{if(f2-f1<=0)return'';const[a,b]=P(f1,r),[x,y]=P(f2,r);return`<path d="M${a} ${b}A${r} ${r} 0 0 1 ${x} ${y}" fill="none" stroke="${c}" stroke-width="${w}"/>`};
+function gauge(x,scale){
+ const s=st(x),sc=x.max>0?x.max:scale,f=Math.min(Math.max(x.saldo/sc,0),1),fl=Math.min(ref(x)/sc,1),fw=Math.min(ref(x)*1.1/sc,1),nc=x.nf||s==='ok'?'var(--nd)':COR[s];
+ let t='';for(let i=0;i<=4;i++){const[a,b]=P(i/4,70),[c,d]=P(i/4,62);t+=`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="var(--tick)" stroke-width="1.5"/>`}
+ const[ex,ey]=P(0,50),[fx,fy]=P(1,50);
+ const val=x.nf?'—':fmt(x.saldo);
+ return `<svg viewBox="0 -26 200 144">
+ ${arc(0,1,82,'var(--trk)',14)}${x.nf?'':arc(0,fl,82,'#7f1d1d',14)+arc(fl,fw,82,'#92400e',14)+arc(fw,1,82,'#15803d',14)+arc(0,f,82,COR[s],14)}
+ ${t}
+ <text x="${ex}" y="${(+ey+13).toFixed(1)}" font-size="11" font-weight="700" fill="#ef4444" text-anchor="middle">E</text>
+ <text x="${fx}" y="${(+fy+13).toFixed(1)}" font-size="11" font-weight="700" fill="#22c55e" text-anchor="middle">F</text>
+ <g class="nd" data-a="${(-90+180*f).toFixed(1)}" style="transform-origin:100px 100px;transform:rotate(-90deg)"><polygon points="97,100 100,34 103,100" fill="${nc}"/></g>
+ <circle cx="100" cy="100" r="7" fill="${nc}"/><circle cx="100" cy="100" r="3" fill="var(--pn)"/>
+ <text x="93" y="-6" text-anchor="end" font-size="22" font-weight="800" fill="${COR[s]}">${val}</text><text x="100" y="-6" text-anchor="middle" font-size="22" font-weight="300" fill="var(--mut)">/</text><text x="107" y="-6" text-anchor="start" font-size="22" font-weight="800" fill="var(--tx)">${fmt(ref(x))}</text>
+ <text x="93" y="6" text-anchor="end" font-size="9" fill="var(--mut)">${x.nf?'SEM SALDO':'SALDO'}${x.un&&!x.nf?' ('+esc(x.un)+')':''}</text><text x="107" y="6" font-size="9" fill="var(--mut)">MÍNIMO</text>
+ 
+ </svg>`}
+// ---------- locais de estoque ----------
+function allLocs(){const m=new Map();for(const s of S.saldo?S.saldo.r:[]){const k=s.loc||'Sem local';m.set(k,(m.get(k)||0)+1)}return[...m].map(([nome,n])=>({nome,n})).sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR'))}
+function fixSel(){const L=allLocs().map(l=>l.nome);if(!L.length){selLoc=null;return}
+ let s=selLoc?new Set([...selLoc].filter(n=>L.includes(n))):new Set();
+ if(!s.size){const e=L.find(n=>norm(n)==='almox ecn');s=new Set(e?[e]:L)} // padrão: ALMOX ECN, se existir
+ selLoc=s}
+function locChips(){const L=allLocs();if(!L.length)return'';const all=selLoc.size===L.length;
+ return `<span class="chip ${all?'on':''}" style="--c:#3b6ef6" data-all="1"><i></i>Todos <small>${L.length}</small></span>`+
+ L.map(l=>`<span class="chip ${!all&&selLoc.has(l.nome)?'on':''}" style="--c:#3b6ef6" data-l="${esc(l.nome)}"><i></i>${esc(l.nome)} <small>${l.n}</small></span>`).join('')}
+function locChanged(){savePrefs();redraw()}
+document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest('[data-l],[data-all]');if(!c||!S.saldo)return;
+ const L=allLocs().map(l=>l.nome);
+ if(c.dataset.all!==undefined)selLoc=new Set(L);
+ else{const n=c.dataset.l;
+  if(selLoc.size===L.length)selLoc=new Set([n]);      // saindo de "Todos": fica só o clicado
+  else if(selLoc.has(n)){selLoc.delete(n);if(!selLoc.size)selLoc=new Set(L)}
+  else selLoc.add(n)}
+ locChanged()});
+function savePrefs(){try{localStorage.setItem(PK,JSON.stringify({view,ord:$('ord').value,loc:selLoc?[...selLoc]:null,blind:MET.blind,nome:MET.nome,resp:MET.resp,cols:$('cols').value}))}catch(e){}}
+// ---------- navegação ----------
+function segHTML(){return'<span class="seg">'+[['rel','🕒 Relógios'],['lst','☰ Lista'],['inv','📋 Inventário']].filter(a=>!(PUB&&a[0]==='inv')).map(([k,l])=>`<button class="g ${view===k?'on':''}" onclick="setView('${k}')">${l}</button>`).join('')+'</span>'}
+function setView(v){if(v==='inv'&&!S.saldo&&scr!=='home')return alert('Carregue a planilha 1 (saldo geral) para fazer o inventário.');
+ view=v;savePrefs();if(scr!=='home')scr=v==='inv'?'inv':'res';paint()}
+function abrir(){if(view==='inv'&&!S.saldo)return alert('Carregue a planilha 1 (saldo geral) para fazer o inventário.');scr=view==='inv'?'inv':'res';paint()}
+function inicio(){scr='home';paint()}
+function relatorio(){scr='rep';paint()}
+function paint(){
+ for(const k of ['saldo','base']){const s=S[k];$(k==='saldo'?'tSaldo':'tBase').textContent=s?`${s.m.nome} · ${s.m.n} itens${s.m.flt||''}`:'não carregado';$(k==='saldo'?'bSaldo':'bBase').classList.toggle('ok',!!s)}
+ const any=S.saldo||S.base;
+ $('bPub').classList.toggle('hide',!any||!!PUB);$('pubInfo').textContent=PUB?'Atualizado em '+PUB.em:'';
+ $('drops').classList.toggle('hide',!!any);
+ for(const k of ['home','res','inv','rep'])$(k).classList.toggle('hide',!any||scr!==k);
+ if(any)redraw()}
+function redraw(){scr==='home'?renderHome():scr==='inv'?renderInv():scr==='rep'?renderRep():refresh()}
+function renderHome(){
+ $('oRel').classList.toggle('on',view==='rel');$('oLst').classList.toggle('on',view==='lst');$('oInv').classList.toggle('on',view==='inv');$('go').textContent=view==='inv'?'Abrir inventário →':'Ver indicadores →';
+ const L=allLocs();
+ if(!L.length){$('hCnt').textContent=S.saldo?'A planilha de saldo não tem a coluna "Estoque/local": todos os saldos serão somados.':'Carregue a planilha 1 (saldo geral) para poder escolher os locais.';$('hLoc').innerHTML=''}
+ else{$('hCnt').textContent=selLoc.size===L.length?'Todos os locais selecionados. Clique em um ou mais locais para filtrar.':`${selLoc.size} de ${L.length} locais selecionados.`;$('hLoc').innerHTML=locChips()}}
+const SH={ok:'Normal',warn:'Atenção',low:'No mínimo',zero:'Zerado',nf:'Sem saldo'};
+function locTxt(){const L=allLocs();if(!L.length)return'';return selLoc.size===L.length?`todos os locais (${L.length})`:[...selLoc].join(', ')}
+function buildCats(){const cur=$('cat').value,rows=itens();
+ $('cat').innerHTML='<option value="">Todas as categorias</option>'+[...new Set(rows.map(x=>x.cat))].sort().map(c=>`<option>${esc(c)}</option>`).join('');
+ if([...$('cat').options].some(o=>o.value===cur))$('cat').value=cur}
+function refresh(){$('rLoc').innerHTML=locChips();$('rLoc').classList.toggle('hide',!allLocs().length);buildCats();render()}
+const crit=x=>x.nf?1e12:x.saldo<=0?-1:ref(x)>0?x.saldo/ref(x):1e6;
+function lstRow(x){
+ const s=st(x),r=ref(x),sc=x.max>0?x.max:(r>0?r*2:Math.max(x.saldo,1)),f=x.nf?0:Math.min(Math.max(x.saldo/sc,0),1),fm=r>0?Math.min(r/sc,1):0;
+ return `<div class="row" style="--c:${COR[s]}" title="${esc(x.cod)} · ${esc(x.cat)} · ${NOME[s]}"><div class="rd"><b>${esc(x.grp?x.desc:x.desc.replace(/^MTS /,''))}</b><small>${esc(x.cod)} · ${esc(x.cat)}${x.un&&!x.nf?' · '+esc(x.un):''}</small></div>`+
+ `<div class="bar"><i data-w="${(f*100).toFixed(1)}"></i>${fm>0&&fm<1?`<u style="left:calc(${(fm*100).toFixed(1)}% - 1px)"></u>`:''}</div>`+
+ `<div class="rv"><em>${x.nf?'—':fmt(x.saldo)}</em><span> / ${fmt(r)}</span><small>${SH[s]}</small></div></div>`}
+function render(){
+ const rows=itens();if(!rows.length&&!(S.saldo||S.base))return;
+ $('segR').innerHTML=segHTML();$('cols').classList.toggle('hide',view!=='rel'||innerWidth>900);$('esc').classList.toggle('hide',view!=='rel');
+ const L=allLocs();
+ const nf=rows.filter(x=>x.nf).length;
+ const msg=!S.base?'Carregue a planilha 2 (base dos indicadores) para ver só os itens desejados. Por enquanto, todos os itens do saldo.':!S.saldo?'Carregue a planilha 1 (saldo geral) para preencher os saldos.':nf?`${nf} item(ns) da base não foram encontrados no saldo dos locais selecionados (mostrados como "sem saldo").`:'';
+ $('note').textContent=msg;$('note').classList.toggle('hide',!msg);
+ $('info').textContent=`${rows.length} itens`+(L.length?' · '+(selLoc.size===L.length?'todos os locais':selLoc.size+' de '+L.length+' locais'):'');$('info').title=locTxt();
+ const q=norm($('q').value),cf=$('cat').value;
+ const base=rows.filter(x=>(!cf||x.cat===cf)&&(!q||norm(x.desc+' '+x.cod).includes(q)));
+ const c={ok:0,warn:0,low:0,zero:0,nf:0};base.forEach(x=>c[st(x)]++);
+ const ch=[['todos','Todos',base.length,'#3b6ef6'],['ok','Normal',c.ok,COR.ok],['warn','Atenção',c.warn,COR.warn],['low','No mínimo',c.low,COR.low],['zero','Zerado',c.zero,COR.zero]];
+ if(c.nf)ch.push(['nf','Sem saldo',c.nf,COR.nf]);
+ $('chips').innerHTML=ch.map(([k,l,v,col])=>`<span class="chip ${stF===k?'on':''}" style="--c:${col}" onclick="stF='${k}';render()"><i></i>${l} ${v}</span>`).join('');
+ const mxCat={};let mxAll=1;rows.forEach(x=>{mxCat[x.cat]=Math.max(mxCat[x.cat]||1,x.saldo);mxAll=Math.max(mxAll,x.saldo)});
+ const byCrit=$('ord').value==='crit';
+ const list=base.filter(x=>stF==='todos'||st(x)===stF).sort(byCrit?(a,b)=>crit(a)-crit(b)||a.desc.localeCompare(b.desc):(a,b)=>a.cat.localeCompare(b.cat)||(a.ord??999)-(b.ord??999)||a.desc.localeCompare(b.desc));
+ const vazio='<div style="margin:auto;color:var(--mut)">Nenhum item encontrado.</div>';
+ $('grid').classList.toggle('hide',view!=='rel');$('list').classList.toggle('hide',view!=='lst');
+ if(view==='rel'){
+  $('grid').innerHTML=list.map(x=>`<div class="cell" title="${esc(x.cod)} · ${esc(x.cat)} · ${NOME[st(x)]}${x.min?' · mín '+fmt(x.min):''}">${gauge(x,$('esc').value==='all'?mxAll:mxCat[x.cat])}<div class="nm">${esc(x.grp?x.desc:x.desc.replace(/^MTS /,''))}</div></div>`).join('')||vazio;
+  fit(list.length);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.nd').forEach(n=>n.style.transform=`rotate(${n.dataset.a}deg)`)));
+ }else{
+  let last=null,h='';for(const x of list){if(!byCrit&&x.cat!==last){h+=`<div class="gh">${esc(x.cat)}</div>`;last=x.cat}h+=lstRow(x)}
+  $('list').innerHTML=h||vazio;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('#list .bar>i').forEach(i=>i.style.width=i.dataset.w+'%')));
+ }}
+// ---------- INVENTÁRIO ----------
+const SI={pend:'Pendente',ok:'Confere',falta:'Falta',sobra:'Sobra'},CI={pend:'#64748b',ok:'#22c55e',falta:'#ef4444',sobra:'#f59e0b'};
+let IVM=new Map(),mList=[],mIdx=-1,mKey=null;
+const cnt=k=>CONT[k]&&CONT[k].q!=null?CONT[k]:null,sgn=d=>(d>0?'+':'')+fmt(d);
+function ist(x){const e=cnt(x.key);if(!e)return'pend';const d=e.q-x.sis;return Math.abs(d)<1e-6?'ok':d>0?'sobra':'falta'}
+function saveCont(){try{localStorage.setItem(CK,JSON.stringify(CONT))}catch(e){}}
+// um item por (local + código): é onde a prateleira fisicamente está
+function invItens(){
+ if(!S.saldo)return[];
+ const base=S.base?S.base.r:null;let bc=null,bd=null;
+ if(base){bc=new Map();bd=new Map();for(const b of base){if(ck(b.cod))bc.set(ck(b.cod),b);if(b.desc)bd.set(norm(b.desc),b)}}
+ const m=new Map();
+ for(const s of S.saldo.r){const loc=s.loc||'Sem local';if(selLoc&&!selLoc.has(loc))continue;
+  let b=null;if(base){b=(ck(s.cod)&&bc.get(ck(s.cod)))||(s.desc&&bd.get(norm(s.desc)))||null;if(!b)continue}
+  const key=loc+'|'+(ck(s.cod)||norm(s.desc)),o=m.get(key);
+  if(o)o.sis+=s.saldo;else m.set(key,{key,loc,cod:s.cod,desc:s.desc||(b&&b.desc)||s.cod,un:s.un,sis:s.saldo,cat:(b&&b.cat)||categoria(s.desc||s.cod)})}
+ return[...m.values()]}
+function invVisible(ignoreStatus){
+ const q=norm($('iq').value),cf=$('icat').value;
+ let l=[...IVM.values()].filter(x=>(!cf||x.cat===cf)&&(!q||norm(x.desc+' '+x.cod+' '+x.loc).includes(q)));
+ if(!ignoreStatus&&iF!=='todos')l=l.filter(x=>{const s=ist(x);return iF==='cont'?s!=='pend':s===iF});
+ return l.sort((a,b)=>a.loc.localeCompare(b.loc,'pt-BR')||a.cat.localeCompare(b.cat)||a.desc.localeCompare(b.desc))}
+function invRow(x){
+ const s=ist(x),e=cnt(x.key),b=MET.blind,col=b?(e?'#3b6ef6':CI.pend):CI[s],d=e?e.q-x.sis:0;
+ return `<div class="row irow" data-k="${esc(x.key)}" style="--c:${col}"><div class="rd"><b>${esc(x.desc.replace(/^MTS /,''))}</b><small>${esc(x.cod)} · ${esc(x.loc)}${x.un?' · '+esc(x.un):''}${e&&e.o?' · 📝 '+esc(e.o):''}</small></div>`+
+ `<div class="iv"><small>SISTEMA</small><b>${b?'•••':fmt(x.sis)}</b></div>`+
+ `<div class="iv"><small>CONTADO</small><b style="color:${e?'var(--tx)':'var(--mut)'}">${e?fmt(e.q):'—'}</b></div>`+
+ `<div class="iv"><small>${b?'STATUS':'DIFERENÇA'}</small><b style="color:${col}">${b?(e?'Contado':'Pendente'):e?(s==='ok'?'✓ Confere':sgn(d)):'Pendente'}</b></div></div>`}
+function renderInv(){
+ $('segI').innerHTML=segHTML();$('blind').checked=MET.blind;
+ if(!S.saldo){$('ilist').innerHTML='<div style="margin:auto;color:var(--mut)">Carregue a planilha 1 (saldo geral) para fazer o inventário.</div>';return}
+ const all=invItens();IVM=new Map(all.map(x=>[x.key,x]));
+ $('iLoc').innerHTML=locChips();$('iLoc').classList.toggle('hide',!allLocs().length);
+ const cur=$('icat').value;$('icat').innerHTML='<option value="">Todas as categorias</option>'+[...new Set(all.map(x=>x.cat))].sort().map(c=>`<option>${esc(c)}</option>`).join('');
+ if([...$('icat').options].some(o=>o.value===cur))$('icat').value=cur;
+ const tot=all.length,done=all.filter(x=>ist(x)!=='pend').length,pct=tot?done/tot*100:0;
+ $('iProg').innerHTML=`<div class="bar" style="--c:#3b6ef6"><i style="width:${pct.toFixed(1)}%"></i></div><span class="sub">${done} de ${tot} contados (${pct.toFixed(0)}%)</span>`;
+ const base=invVisible(true),c={pend:0,ok:0,falta:0,sobra:0};base.forEach(x=>c[ist(x)]++);
+ let ch=[['todos','Todos',base.length,'#3b6ef6'],['pend','Pendentes',c.pend,CI.pend]];
+ ch=ch.concat(MET.blind?[['cont','Contados',base.length-c.pend,'#3b6ef6']]:[['ok','Conferem',c.ok,CI.ok],['falta','Faltas',c.falta,CI.falta],['sobra','Sobras',c.sobra,CI.sobra]]);
+ if(!ch.some(a=>a[0]===iF))iF='todos';
+ $('iChips').innerHTML=ch.map(([k,l,v,col])=>`<span class="chip ${iF===k?'on':''}" style="--c:${col}" onclick="iF='${k}';renderInv()"><i></i>${l} ${v}</span>`).join('');
+ let h='',last=null;for(const x of invVisible()){const g=x.loc+' · '+x.cat;if(g!==last){h+=`<div class="gh">${esc(g)}</div>`;last=g}h+=invRow(x)}
+ $('ilist').innerHTML=h||'<div style="margin:auto;color:var(--mut)">Nenhum item encontrado.</div>'}
+$('ilist').addEventListener('click',e=>{const r=e.target.closest('.irow');if(r)invOpen(r.dataset.k)});
+['iq','icat'].forEach(i=>$(i).addEventListener('input',renderInv));
+$('blind').addEventListener('change',()=>{MET.blind=$('blind').checked;savePrefs();renderInv()});
+function zerarCont(){if(!confirm('Apagar TODAS as quantidades contadas? Isso não pode ser desfeito.'))return;CONT={};saveCont();renderInv()}
+// ---- box de contagem ----
+function invOpen(key){mList=invVisible().map(x=>x.key);mIdx=mList.indexOf(key);abrirItem(key)}
+function abrirItem(key){const x=IVM.get(key);if(!x)return;mKey=key;const e=cnt(key);
+ $('mT').textContent=x.desc;$('mS').textContent=`${x.cod} · ${x.loc} · ${x.cat}${x.un?' · '+x.un:''}`;
+ $('mSis').innerHTML=MET.blind?'Contagem cega: saldo do sistema oculto.':`Saldo no sistema: <b>${fmt(x.sis)}</b> ${esc(x.un)}`;
+ $('mQ').value=e?String(e.q).replace('.',','):'';$('mO').value=e&&e.o||'';mDifUpd();
+ $('mdl').classList.remove('hide');setTimeout(()=>{$('mQ').focus();$('mQ').select()},30)}
+function mDifUpd(){const x=IVM.get(mKey),q=num($('mQ').value);
+ if(!x||q===null||MET.blind){$('mDif').textContent='';return}
+ const d=q-x.sis,s=Math.abs(d)<1e-6?'ok':d>0?'sobra':'falta';
+ $('mDif').innerHTML=`<span style="color:${CI[s]}">${s==='ok'?'✓ Confere com o sistema':'Diferença: '+sgn(d)+' ('+SI[s].toLowerCase()+')'}</span>`}
+function mFechar(){$('mdl').classList.add('hide');mKey=null}
+function mSalvar(prox){const q=num($('mQ').value);
+ if(q===null||q<0){$('mDif').innerHTML='<span style="color:#ef4444">Digite a quantidade (use 0 se a prateleira estiver vazia).</span>';$('mQ').focus();return}
+ CONT[mKey]={q,t:Date.now(),o:$('mO').value.trim()};saveCont();renderInv();
+ if(prox&&mIdx+1<mList.length){mIdx++;abrirItem(mList[mIdx])}else mFechar()}
+function mLimpar(){delete CONT[mKey];saveCont();renderInv();mFechar()}
+$('mQ').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();mSalvar(true)}});
+$('mQ').addEventListener('input',mDifUpd);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('mdl').classList.contains('hide'))mFechar()});
+$('mdl').addEventListener('click',e=>{if(e.target===$('mdl'))mFechar()});
+// ---- relatório de auditoria ----
+function repRows(){return invItens().map(x=>{const e=cnt(x.key),s=ist(x),d=e?e.q-x.sis:null;return{x,e,s,d,p:e&&x.sis?d/x.sis*100:null}})}
+function kpis(R){const n=R.length,c=R.filter(r=>r.s!=='pend').length,f=k=>R.filter(r=>r.s===k).length;
+ return{n,c,p:n-c,ok:f('ok'),f:f('falta'),s:f('sobra'),ac:c?f('ok')/c*100:null,cob:n?c/n*100:0}}
+const pc=p=>p==null?'—':(p>0?'+':'')+p.toFixed(1)+'%';
+function renderRep(){
+ if(!S.saldo){$('repBody').innerHTML='<div style="color:var(--mut);padding:20px">Carregue a planilha 1 (saldo geral).</div>';return}
+ const R=repRows(),k=kpis(R),agora=new Date().toLocaleString('pt-BR');
+ const tr=(r,cols)=>`<tr>${cols.map(c=>`<td${c[1]?` class="n"`:''}${c[2]?` style="color:${c[2]};font-weight:700"`:''}>${c[0]}</td>`).join('')}</tr>`;
+ const nm=r=>`${esc(r.x.desc.replace(/^MTS /,''))}<br><small>${esc(r.x.cod)}</small>`;
+ const tb=(h,rows,vazio)=>rows.length?`<table class="rt"><thead><tr>${h.map(t=>`<th${/Sist|Cont|Dif/.test(t)?' class="n"':''}>${t}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>`:`<div class="sub">${vazio}</div>`;
+ const div=R.filter(r=>r.s==='falta'||r.s==='sobra').sort((a,b)=>(b.p==null?1e9:Math.abs(b.p))-(a.p==null?1e9:Math.abs(a.p))||Math.abs(b.d)-Math.abs(a.d));
+ const kp=(l,v,c)=>`<div style="--c:${c}"><b>${v}</b><span>${l}</span></div>`;
+ $('repBody').innerHTML=`<div class="paper">
+  <h2>Relatório de auditoria de inventário</h2>
+  <div class="meta">
+   <label>Inventário<input id="rN" value="${esc(MET.nome)}" placeholder="Ex.: Inventário cíclico – novembro"></label>
+   <label>Responsável<input id="rR" value="${esc(MET.resp)}" placeholder="Nome de quem contou"></label>
+   <label>Gerado em<div>${agora}</div></label>
+   <label>Locais<div>${esc(locTxt()||'—')}</div></label>
+   <label>Itens considerados<div>${S.base?'Somente a base dos indicadores':'Todos os itens do saldo'}</div></label>
+   <label>Saldo do sistema<div>${esc(S.saldo.m.nome)} (${esc(S.saldo.m.em)})</div></label>
+  </div>
+  <div class="kp">${kp('Itens no escopo',k.n,'#3b6ef6')}${kp('Contados ('+k.cob.toFixed(0)+'%)',k.c,'#3b6ef6')}${kp('Pendentes',k.p,CI.pend)}${kp('Conferem',k.ok,CI.ok)}${kp('Faltas',k.f,CI.falta)}${kp('Sobras',k.s,CI.sobra)}${kp('Acurácia (conferem / contados)',k.ac==null?'—':k.ac.toFixed(1)+'%',k.ac==null?CI.pend:k.ac>=95?CI.ok:k.ac>=85?CI.sobra:CI.falta)}</div>
+  <div><h3>Divergências (${div.length})</h3>${tb(['Item','Local','Un','Sistema','Contado','Diferença','Dif %','Observação'],div.map(r=>tr(r,[[nm(r)],[esc(r.x.loc)],[esc(r.x.un)],[fmt(r.x.sis),1],[fmt(r.e.q),1],[sgn(r.d),1,CI[r.s]],[pc(r.p),1,CI[r.s]],[esc(r.e.o||'')]])),'Nenhuma divergência encontrada nos itens contados.')}</div>
+  <div><h3>Pendentes de contagem (${k.p})</h3>${tb(['Item','Local','Un','Sistema'],R.filter(r=>r.s==='pend').map(r=>tr(r,[[nm(r)],[esc(r.x.loc)],[esc(r.x.un)],[fmt(r.x.sis),1]])),'Todos os itens foram contados.')}</div>
+  <div><h3>Itens que conferem (${k.ok})</h3>${tb(['Item','Local','Un','Sistema','Contado'],R.filter(r=>r.s==='ok').map(r=>tr(r,[[nm(r)],[esc(r.x.loc)],[esc(r.x.un)],[fmt(r.x.sis),1],[fmt(r.e.q),1]])),'Nenhum item conferido ainda.')}</div>
+  <div class="sig"><div>Responsável pela contagem</div><div>Conferente / Auditor</div><div>Data</div></div>
+ </div>`}
+$('repBody').addEventListener('input',e=>{if(e.target.id==='rN')MET.nome=e.target.value;else if(e.target.id==='rR')MET.resp=e.target.value;else return;savePrefs()});
+function exportar(){
+ const R=repRows(),k=kpis(R),dia=new Date().toISOString().slice(0,10);
+ const head=['Local','Código','Descrição','Categoria','Un','Saldo sistema','Contado','Diferença','Dif %','Situação','Observação','Contado em'];
+ const data=R.map(({x,e,s,d,p})=>[x.loc,x.cod,x.desc,x.cat,x.un,x.sis,e?e.q:'',d==null?'':d,p==null?'':+p.toFixed(2),SI[s],e&&e.o||'',e&&e.t?new Date(e.t).toLocaleString('pt-BR'):'']);
+ const resumo=[['Relatório de auditoria de inventário'],['Inventário',MET.nome],['Responsável',MET.resp],['Gerado em',new Date().toLocaleString('pt-BR')],['Locais',locTxt()||'—'],[],['Itens no escopo',k.n],['Contados',k.c],['Pendentes',k.p],['Conferem',k.ok],['Faltas',k.f],['Sobras',k.s],['Acurácia (conferem / contados)',k.ac==null?'':+k.ac.toFixed(1)+'%']];
+ if(typeof XLSX!=='undefined'){const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(resumo),'Resumo');XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([head,...data]),'Auditoria');XLSX.writeFile(wb,`Auditoria_inventario_${dia}.xlsx`)}
+ else{const csv='\ufeff'+[head,...data].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=`Auditoria_inventario_${dia}.csv`;a.click()}}
+// escolhe colunas/linhas para que todos os marcadores caibam na tela
+function fit(n){
+ const g=$('grid'),W=g.clientWidth,H=g.clientHeight,gap=6;if(!n)return;
+ const mob=innerWidth<=900;
+ if(mob){ // celular/janela estreita: relógios grandes, rolagem vertical
+  const cs=$('cols').value,c=cs==='auto'?Math.max(1,Math.floor((W+gap)/(170+gap))):+cs,cw=(W-gap*(c-1))/c;
+  g.style.gridTemplateColumns=`repeat(${c},1fr)`;g.style.gridTemplateRows='';
+  g.style.setProperty('--gw',Math.min(cw-12,440)+'px');g.style.setProperty('--fs',Math.max(12,Math.min(16,cw/14))+'px');return}
+ g.style.gridAutoRows='';
+ let best=null;
+ for(let c=1;c<=n;c++){const r=Math.ceil(n/c),cw=(W-gap*(c-1))/c,ch=(H-gap*(r-1))/r;
+  const fs=Math.max(9,Math.min(13,cw/17)),svgH=ch-fs*2.5-14,gw=Math.min(cw-12,svgH*200/144);
+  if(!best||gw>best.gw)best={c,r,gw,fs}}
+ g.style.gridTemplateColumns=`repeat(${best.c},1fr)`;g.style.gridTemplateRows=`repeat(${best.r},1fr)`;
+ g.style.setProperty('--gw',Math.max(best.gw,40)+'px');g.style.setProperty('--fs',best.fs+'px');
+}
+function publicar(){
+ if(!S.saldo&&!S.base)return alert('Carregue as planilhas primeiro.');
+ // leva só os locais marcados na tela inicial e, havendo base, só os itens dela
+ let r=S.saldo?S.saldo.r.filter(x=>!selLoc||selLoc.has(x.loc||'Sem local')):[];
+ if(S.base){const bc=new Set(),bd=new Set();for(const b of S.base.r){if(ck(b.cod))bc.add(ck(b.cod));if(b.desc)bd.add(norm(b.desc))}
+  r=r.filter(x=>(ck(x.cod)&&bc.has(ck(x.cod)))||(x.desc&&bd.has(norm(x.desc))))}
+ const loc=selLoc?[...selLoc]:null;
+ const data={saldo:S.saldo?{r,m:S.saldo.m}:null,base:S.base,loc,view:view==='inv'?'rel':view,lim:$('lim').value,em:new Date().toLocaleString('pt-BR')};
+ let h=PRISTINE.replace(/<script src="[^"]*xlsx[^"]*"><\/script>\s*/,'');
+ const i=h.indexOf('<scr'+'ipt>\nconst PRISTINE'); // início do script principal (não confundir com textos dentro do código)
+ if(i<0)return alert('Não foi possível gerar a página.');
+ h=h.slice(0,i)+'<script>window.__PUB='+JSON.stringify(data).replace(/</g,'\\u003c')+';<\/script>\n'+h.slice(i);
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([h],{type:'text/html'}));a.download='index.html';document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+function limpar(){if(!confirm('Limpar as duas planilhas carregadas?'))return;try{localStorage.removeItem(KEY('saldo'));localStorage.removeItem(KEY('base'));localStorage.removeItem(PK);localStorage.removeItem('indEstoqueV3b_saldo')}catch(e){}location.reload()}
+function ler(f,slot){if(PUB||!f)return;const r=new FileReader();r.onload=e=>processar(new Uint8Array(e.target.result),f.name,slot);r.readAsArrayBuffer(f)}
+$('file').onchange=e=>{ler(e.target.files[0],slotAtual);e.target.value=''};
+['q','cat','lim','esc'].forEach(i=>$(i).addEventListener('input',render));
+$('ord').addEventListener('input',()=>{savePrefs();render()});
+$('cols').addEventListener('input',()=>{savePrefs();render()});
+addEventListener('resize',()=>scr==='res'&&(S.saldo||S.base)&&render());
+document.querySelectorAll('.drop').forEach(d=>d.onclick=()=>pick(d.dataset.slot));
+document.addEventListener('dragover',e=>{e.preventDefault();const d=e.target.closest&&e.target.closest('.drop');document.querySelectorAll('.drop').forEach(x=>x.classList.toggle('over',x===d))});
+document.addEventListener('dragleave',e=>{if(!e.relatedTarget)document.querySelectorAll('.drop').forEach(x=>x.classList.remove('over'))});
+document.addEventListener('drop',e=>{e.preventDefault();document.querySelectorAll('.drop').forEach(x=>x.classList.remove('over'));
+ const d=e.target.closest&&e.target.closest('.drop');ler(e.dataTransfer.files[0],d?d.dataset.slot:(S.saldo?'base':'saldo'))});
+if(PUB){S.saldo=PUB.saldo;S.base=PUB.base;view=PUB.view||'rel';if(PUB.loc)selLoc=new Set(PUB.loc);if(PUB.lim!=null)$('lim').value=PUB.lim}
+else for(const k of ['saldo','base']){try{const s=JSON.parse(localStorage.getItem(KEY(k))||'null');if(s)S[k]=s}catch(e){}}
+try{const p=JSON.parse(localStorage.getItem(PK)||'null');if(p){if(['rel','lst','inv'].includes(p.view))view=p.view;MET.blind=!!p.blind;if(p.cols)$('cols').value=p.cols;MET.nome=p.nome||'';MET.resp=p.resp||'';if(p.ord)$('ord').value=p.ord;if(Array.isArray(p.loc))selLoc=new Set(p.loc)}}catch(e){}
+if(!PUB)try{CONT=JSON.parse(localStorage.getItem(CK)||'{}')||{}}catch(e){CONT={}}
+if(PUB&&view==='inv')view='rel';
+fixSel();
+paint();
+</script></body></html>
