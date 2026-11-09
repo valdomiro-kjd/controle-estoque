@@ -63,6 +63,38 @@ button.up.ok{border-color:#22c55e}
 .drop b{display:inline-block;background:#3b6ef6;color:#fff;border-radius:99px;padding:2px 10px;margin-bottom:10px}
 #note{font-size:12px;color:#f59e0b;padding:0 4px 6px}
 .hide{display:none!important}
+input[type=checkbox]{padding:0;width:16px;height:16px;vertical-align:middle;margin-right:4px}
+#inv,#rep{flex:1;min-height:0;display:flex;flex-direction:column}
+#iLoc{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;flex-wrap:nowrap}
+#iProg{display:flex;align-items:center;gap:12px;padding:0 4px 8px}#iProg .bar{flex:1}#iProg .bar>i{transition:width .4s}
+#ilist{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:2px 2px 10px}
+.irow{grid-template-columns:minmax(0,2fr) 90px 90px 120px;cursor:pointer}.irow:hover{background:var(--pn2)}
+.iv{text-align:right}.iv small{display:block;font-size:9px;color:var(--mut);font-weight:700;letter-spacing:.05em}.iv b{font-size:16px}
+@media(max-width:640px){.irow{grid-template-columns:1fr 1fr 1fr}.irow .rd{grid-column:1/-1}}
+#mdl{position:fixed;inset:0;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50;overflow-y:auto}
+.mbox{background:var(--pn);border:1px solid var(--bd);border-radius:16px;padding:18px;width:100%;max-width:440px;display:flex;flex-direction:column;gap:12px}
+.mbox b#mT{font-size:16px;display:block}.mbox small{color:var(--mut);font-size:12px}
+.mbox label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--mut);font-weight:600}
+.mbox input{font-size:18px;color:var(--tx)}#mO{font-size:14px}
+#mSis{font-size:14px;padding:8px 12px;border-radius:10px;background:var(--pn2)}#mDif{min-height:22px;font-weight:700;font-size:14px}
+.mb{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.paper{max-width:1000px;margin:0 auto;padding:6px 4px 28px;display:flex;flex-direction:column;gap:18px;width:100%}
+.paper h2{margin:0;font-size:20px}.paper h3{margin:0 0 8px;font-size:14px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.meta label{display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--mut);font-weight:600}.meta div{font-size:13px;color:var(--tx)}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.kp div{background:var(--pn);border:1px solid var(--bd2);border-top:3px solid var(--c);border-radius:10px;padding:10px 12px}.kp b{display:block;font-size:22px;color:var(--c)}.kp span{font-size:11px;color:var(--mut)}
+.rt{width:100%;border-collapse:collapse;font-size:12px}.rt th,.rt td{border-bottom:1px solid var(--bd2);padding:6px 8px;text-align:left;vertical-align:top}
+.rt th{color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.05em}.rt .n{text-align:right;white-space:nowrap}.rt small{color:var(--mut)}
+.sig{display:flex;gap:40px;margin-top:30px}.sig div{flex:1;border-top:1px solid var(--tx);padding-top:4px;font-size:11px;color:var(--mut)}
+@media print{
+ html:root:not([data-p]){--bg1:#fff;--bg2:#fff;--tx:#000;--mut:#444;--pn:#fff;--pn2:#fff;--bd:#bbb;--bd2:#ccc;--trk:#ddd}
+ html,body{height:auto!important;overflow:visible!important;display:block!important;background:#fff!important}
+ #bar,.noprint,#mdl{display:none!important}
+ #main{display:block!important;padding:0!important}
+ #rep,#repBody{display:block!important;overflow:visible!important}
+ .rt tr{break-inside:avoid}.meta input{border:0;padding:0;background:none;color:#000}
+}
 </style>
 </head>
 <body>
@@ -86,6 +118,7 @@ button.up.ok{border-color:#22c55e}
       <div class="opts">
         <button class="opt" id="oRel" onclick="setView('rel')"><b>🕒 Relógios</b><span>Um velocímetro por item, ideal para painel de TV.</span></button>
         <button class="opt" id="oLst" onclick="setView('lst')"><b>☰ Lista</b><span>Uma linha por item com barra de evolução e saldo / mínimo.</span></button>
+        <button class="opt" id="oInv" onclick="setView('inv')"><b>📋 Inventário</b><span>Digite a quantidade real da prateleira de cada item e gere o relatório de auditoria.</span></button>
       </div></div>
     <div><h2>2 · De quais locais de estoque?</h2>
       <p class="sub" id="hCnt"></p>
@@ -97,7 +130,7 @@ button.up.ok{border-color:#22c55e}
   <div id="res" class="hide">
     <div class="rb">
       <button class="g" onclick="inicio()">← Início</button>
-      <span class="seg"><button class="g" id="sgRel" onclick="setView('rel')">🕒 Relógios</button><button class="g" id="sgLst" onclick="setView('lst')">☰ Lista</button></span>
+      <span id="segR"></span>
       <input id="q" placeholder="Buscar…">
       <select id="cat"></select>
       <select id="ord"><option value="cat">Ordem: por categoria</option><option value="crit">Ordem: mais críticos primeiro</option></select>
@@ -111,18 +144,57 @@ button.up.ok{border-color:#22c55e}
     <div id="grid" class="hide"></div>
     <div id="list" class="hide"></div>
   </div>
+
+  <!-- INVENTÁRIO -->
+  <div id="inv" class="hide">
+    <div class="rb">
+      <button class="g" onclick="inicio()">← Início</button>
+      <span id="segI"></span>
+      <input id="iq" placeholder="Buscar…">
+      <select id="icat"></select>
+      <label class="sub" title="Esconde o saldo do sistema para o contador não ser influenciado"><input type="checkbox" id="blind">Contagem cega</label>
+      <span class="sp"></span>
+      <button class="g" onclick="zerarCont()">Zerar contagens</button>
+      <button onclick="relatorio()">📄 Relatório de auditoria</button>
+    </div>
+    <div id="iLoc"></div>
+    <div id="iProg"></div>
+    <div class="rb" id="iChips"></div>
+    <div id="ilist"></div>
+  </div>
+
+  <!-- RELATÓRIO -->
+  <div id="rep" class="hide">
+    <div class="rb noprint">
+      <button class="g" onclick="scr='inv';paint()">← Voltar ao inventário</button>
+      <span class="sp"></span>
+      <button class="g" onclick="exportar()">⬇ Exportar Excel</button>
+      <button onclick="window.print()">🖨 Imprimir / PDF</button>
+    </div>
+    <div id="repBody" style="flex:1;min-height:0;overflow-y:auto"></div>
+  </div>
 </div>
+
+<!-- BOX DE CONTAGEM -->
+<div id="mdl" class="hide"><div class="mbox">
+  <div><b id="mT"></b><small id="mS"></small></div>
+  <div id="mSis"></div>
+  <label>Quantidade contada na prateleira<input id="mQ" inputmode="decimal" autocomplete="off" placeholder="0"></label>
+  <div id="mDif"></div>
+  <label>Observação (opcional)<input id="mO" autocomplete="off" placeholder="Ex.: caixa avariada, item em outro local…"></label>
+  <div class="mb"><button class="g" onclick="mFechar()">Cancelar</button><button class="g" onclick="mLimpar()">Limpar</button><button class="g" onclick="mSalvar(false)">Salvar</button><button onclick="mSalvar(true)">Salvar e próximo →</button></div>
+</div></div>
 <script>
 const $=id=>document.getElementById(id);
 const fmt=n=>(n??0).toLocaleString('pt-BR',{maximumFractionDigits:2});
-const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' ');
+const norm=s=>String(s??'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim().replace(/\s+/g,' ');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=v=>{if(typeof v==='number')return v;const s=String(v??'').trim();if(!s)return null;const x=parseFloat(s.includes(',')?s.replace(/\./g,'').replace(',','.'):s);return isNaN(x)?null:x};
 const ck=v=>String(v??'').trim().toLowerCase().replace(/^0+(?=.)/,'');
 const COR={ok:'#22c55e',warn:'#f59e0b',low:'#ef4444',zero:'#ef4444',nf:'#64748b'},NOME={ok:'Normal',warn:'Atenção (até 10% acima do mínimo)',low:'No mínimo ou abaixo',zero:'Zerado',nf:'Sem saldo'};
 const MAP={cod:['codigo do produto','codigo','cod','sku','codigo produto','cod produto'],desc:['descricao','descricao do produto','produto','nome','item'],un:['unidade','un','und'],saldo:['saldo fisico','saldo','quantidade','qtd','saldo atual'],min:['estoque minimo','minimo','min'],max:['estoque maximo','maximo','max','meta','capacidade'],cat:['categoria','grupo','familia','linha'],almox:['estoque/local','estoque / local','estoque local','local de estoque','local estoque','almoxarifado','deposito','armazem']};
 const S={saldo:null,base:null},KEY=k=>k==='saldo'?'indEstoqueV4_saldo':'indEstoque_'+k,PK='indEstoqueV4_prefs';
-let stF='todos',slotAtual='saldo',scr='home',view='rel',selLoc=null;
+let stF='todos',slotAtual='saldo',scr='home',view='rel',selLoc=null,iF='todos',CONT={},MET={nome:'',resp:'',blind:false};const CK='indEstoqueV5_cont';
 // classifica cabos nos 6 grupos unificados (retorna null se não for um dos grupos)
 const GRUPOS=['MTS CABO CAT5E AZ','MTS CABO CAT5E PT','MTS CABO CAT6 SOHO PLUS','MTS CABO CAT6 TODOS EXCETO SOHO PLUS','MTS CABO CFTV PT','MTS CABO CFTV AZ'];
 function grupoCabo(d){
@@ -209,7 +281,7 @@ function fixSel(){const L=allLocs().map(l=>l.nome);if(!L.length){selLoc=null;ret
 function locChips(){const L=allLocs();if(!L.length)return'';const all=selLoc.size===L.length;
  return `<span class="chip ${all?'on':''}" style="--c:#3b6ef6" data-all="1"><i></i>Todos <small>${L.length}</small></span>`+
  L.map(l=>`<span class="chip ${!all&&selLoc.has(l.nome)?'on':''}" style="--c:#3b6ef6" data-l="${esc(l.nome)}"><i></i>${esc(l.nome)} <small>${l.n}</small></span>`).join('')}
-function locChanged(){savePrefs();scr==='home'?renderHome():refresh()}
+function locChanged(){savePrefs();redraw()}
 document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest('[data-l],[data-all]');if(!c||!S.saldo)return;
  const L=allLocs().map(l=>l.nome);
  if(c.dataset.all!==undefined)selLoc=new Set(L);
@@ -218,19 +290,23 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
   else if(selLoc.has(n)){selLoc.delete(n);if(!selLoc.size)selLoc=new Set(L)}
   else selLoc.add(n)}
  locChanged()});
-function savePrefs(){try{localStorage.setItem(PK,JSON.stringify({view,ord:$('ord').value,loc:selLoc?[...selLoc]:null}))}catch(e){}}
+function savePrefs(){try{localStorage.setItem(PK,JSON.stringify({view,ord:$('ord').value,loc:selLoc?[...selLoc]:null,blind:MET.blind,nome:MET.nome,resp:MET.resp}))}catch(e){}}
 // ---------- navegação ----------
-function setView(v){view=v;savePrefs();scr==='home'?renderHome():render()}
-function abrir(){scr='res';paint()}
+function segHTML(){return'<span class="seg">'+[['rel','🕒 Relógios'],['lst','☰ Lista'],['inv','📋 Inventário']].map(([k,l])=>`<button class="g ${view===k?'on':''}" onclick="setView('${k}')">${l}</button>`).join('')+'</span>'}
+function setView(v){if(v==='inv'&&!S.saldo&&scr!=='home')return alert('Carregue a planilha 1 (saldo geral) para fazer o inventário.');
+ view=v;savePrefs();if(scr!=='home')scr=v==='inv'?'inv':'res';paint()}
+function abrir(){if(view==='inv'&&!S.saldo)return alert('Carregue a planilha 1 (saldo geral) para fazer o inventário.');scr=view==='inv'?'inv':'res';paint()}
 function inicio(){scr='home';paint()}
+function relatorio(){scr='rep';paint()}
 function paint(){
  for(const k of ['saldo','base']){const s=S[k];$(k==='saldo'?'tSaldo':'tBase').textContent=s?`${s.m.nome} · ${s.m.n} itens${s.m.flt||''}`:'não carregado';$(k==='saldo'?'bSaldo':'bBase').classList.toggle('ok',!!s)}
  const any=S.saldo||S.base;
- $('drops').classList.toggle('hide',!!any);$('home').classList.toggle('hide',!any||scr!=='home');$('res').classList.toggle('hide',!any||scr!=='res');
- if(!any)return;
- scr==='home'?renderHome():refresh()}
+ $('drops').classList.toggle('hide',!!any);
+ for(const k of ['home','res','inv','rep'])$(k).classList.toggle('hide',!any||scr!==k);
+ if(any)redraw()}
+function redraw(){scr==='home'?renderHome():scr==='inv'?renderInv():scr==='rep'?renderRep():refresh()}
 function renderHome(){
- $('oRel').classList.toggle('on',view==='rel');$('oLst').classList.toggle('on',view==='lst');
+ $('oRel').classList.toggle('on',view==='rel');$('oLst').classList.toggle('on',view==='lst');$('oInv').classList.toggle('on',view==='inv');$('go').textContent=view==='inv'?'Abrir inventário →':'Ver indicadores →';
  const L=allLocs();
  if(!L.length){$('hCnt').textContent=S.saldo?'A planilha de saldo não tem a coluna "Estoque/local": todos os saldos serão somados.':'Carregue a planilha 1 (saldo geral) para poder escolher os locais.';$('hLoc').innerHTML=''}
  else{$('hCnt').textContent=selLoc.size===L.length?'Todos os locais selecionados. Clique em um ou mais locais para filtrar.':`${selLoc.size} de ${L.length} locais selecionados.`;$('hLoc').innerHTML=locChips()}}
@@ -248,7 +324,7 @@ function lstRow(x){
  `<div class="rv"><em>${x.nf?'—':fmt(x.saldo)}</em><span> / ${fmt(r)}</span><small>${SH[s]}</small></div></div>`}
 function render(){
  const rows=itens();if(!rows.length&&!(S.saldo||S.base))return;
- $('sgRel').classList.toggle('on',view==='rel');$('sgLst').classList.toggle('on',view==='lst');$('esc').classList.toggle('hide',view!=='rel');
+ $('segR').innerHTML=segHTML();$('esc').classList.toggle('hide',view!=='rel');
  const L=allLocs();
  const nf=rows.filter(x=>x.nf).length;
  const msg=!S.base?'Carregue a planilha 2 (base dos indicadores) para ver só os itens desejados. Por enquanto, todos os itens do saldo.':!S.saldo?'Carregue a planilha 1 (saldo geral) para preencher os saldos.':nf?`${nf} item(ns) da base não foram encontrados no saldo dos locais selecionados (mostrados como "sem saldo").`:'';
@@ -274,6 +350,112 @@ function render(){
   $('list').innerHTML=h||vazio;
   requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('#list .bar>i').forEach(i=>i.style.width=i.dataset.w+'%')));
  }}
+// ---------- INVENTÁRIO ----------
+const SI={pend:'Pendente',ok:'Confere',falta:'Falta',sobra:'Sobra'},CI={pend:'#64748b',ok:'#22c55e',falta:'#ef4444',sobra:'#f59e0b'};
+let IVM=new Map(),mList=[],mIdx=-1,mKey=null;
+const cnt=k=>CONT[k]&&CONT[k].q!=null?CONT[k]:null,sgn=d=>(d>0?'+':'')+fmt(d);
+function ist(x){const e=cnt(x.key);if(!e)return'pend';const d=e.q-x.sis;return Math.abs(d)<1e-6?'ok':d>0?'sobra':'falta'}
+function saveCont(){try{localStorage.setItem(CK,JSON.stringify(CONT))}catch(e){}}
+// um item por (local + código): é onde a prateleira fisicamente está
+function invItens(){
+ if(!S.saldo)return[];
+ const base=S.base?S.base.r:null;let bc=null,bd=null;
+ if(base){bc=new Map();bd=new Map();for(const b of base){if(ck(b.cod))bc.set(ck(b.cod),b);if(b.desc)bd.set(norm(b.desc),b)}}
+ const m=new Map();
+ for(const s of S.saldo.r){const loc=s.loc||'Sem local';if(selLoc&&!selLoc.has(loc))continue;
+  let b=null;if(base){b=(ck(s.cod)&&bc.get(ck(s.cod)))||(s.desc&&bd.get(norm(s.desc)))||null;if(!b)continue}
+  const key=loc+'|'+(ck(s.cod)||norm(s.desc)),o=m.get(key);
+  if(o)o.sis+=s.saldo;else m.set(key,{key,loc,cod:s.cod,desc:s.desc||(b&&b.desc)||s.cod,un:s.un,sis:s.saldo,cat:(b&&b.cat)||categoria(s.desc||s.cod)})}
+ return[...m.values()]}
+function invVisible(ignoreStatus){
+ const q=norm($('iq').value),cf=$('icat').value;
+ let l=[...IVM.values()].filter(x=>(!cf||x.cat===cf)&&(!q||norm(x.desc+' '+x.cod+' '+x.loc).includes(q)));
+ if(!ignoreStatus&&iF!=='todos')l=l.filter(x=>{const s=ist(x);return iF==='cont'?s!=='pend':s===iF});
+ return l.sort((a,b)=>a.loc.localeCompare(b.loc,'pt-BR')||a.cat.localeCompare(b.cat)||a.desc.localeCompare(b.desc))}
+function invRow(x){
+ const s=ist(x),e=cnt(x.key),b=MET.blind,col=b?(e?'#3b6ef6':CI.pend):CI[s],d=e?e.q-x.sis:0;
+ return `<div class="row irow" data-k="${esc(x.key)}" style="--c:${col}"><div class="rd"><b>${esc(x.desc.replace(/^MTS /,''))}</b><small>${esc(x.cod)} · ${esc(x.loc)}${x.un?' · '+esc(x.un):''}${e&&e.o?' · 📝 '+esc(e.o):''}</small></div>`+
+ `<div class="iv"><small>SISTEMA</small><b>${b?'•••':fmt(x.sis)}</b></div>`+
+ `<div class="iv"><small>CONTADO</small><b style="color:${e?'var(--tx)':'var(--mut)'}">${e?fmt(e.q):'—'}</b></div>`+
+ `<div class="iv"><small>${b?'STATUS':'DIFERENÇA'}</small><b style="color:${col}">${b?(e?'Contado':'Pendente'):e?(s==='ok'?'✓ Confere':sgn(d)):'Pendente'}</b></div></div>`}
+function renderInv(){
+ $('segI').innerHTML=segHTML();$('blind').checked=MET.blind;
+ if(!S.saldo){$('ilist').innerHTML='<div style="margin:auto;color:var(--mut)">Carregue a planilha 1 (saldo geral) para fazer o inventário.</div>';return}
+ const all=invItens();IVM=new Map(all.map(x=>[x.key,x]));
+ $('iLoc').innerHTML=locChips();$('iLoc').classList.toggle('hide',!allLocs().length);
+ const cur=$('icat').value;$('icat').innerHTML='<option value="">Todas as categorias</option>'+[...new Set(all.map(x=>x.cat))].sort().map(c=>`<option>${esc(c)}</option>`).join('');
+ if([...$('icat').options].some(o=>o.value===cur))$('icat').value=cur;
+ const tot=all.length,done=all.filter(x=>ist(x)!=='pend').length,pct=tot?done/tot*100:0;
+ $('iProg').innerHTML=`<div class="bar" style="--c:#3b6ef6"><i style="width:${pct.toFixed(1)}%"></i></div><span class="sub">${done} de ${tot} contados (${pct.toFixed(0)}%)</span>`;
+ const base=invVisible(true),c={pend:0,ok:0,falta:0,sobra:0};base.forEach(x=>c[ist(x)]++);
+ let ch=[['todos','Todos',base.length,'#3b6ef6'],['pend','Pendentes',c.pend,CI.pend]];
+ ch=ch.concat(MET.blind?[['cont','Contados',base.length-c.pend,'#3b6ef6']]:[['ok','Conferem',c.ok,CI.ok],['falta','Faltas',c.falta,CI.falta],['sobra','Sobras',c.sobra,CI.sobra]]);
+ if(!ch.some(a=>a[0]===iF))iF='todos';
+ $('iChips').innerHTML=ch.map(([k,l,v,col])=>`<span class="chip ${iF===k?'on':''}" style="--c:${col}" onclick="iF='${k}';renderInv()"><i></i>${l} ${v}</span>`).join('');
+ let h='',last=null;for(const x of invVisible()){const g=x.loc+' · '+x.cat;if(g!==last){h+=`<div class="gh">${esc(g)}</div>`;last=g}h+=invRow(x)}
+ $('ilist').innerHTML=h||'<div style="margin:auto;color:var(--mut)">Nenhum item encontrado.</div>'}
+$('ilist').addEventListener('click',e=>{const r=e.target.closest('.irow');if(r)invOpen(r.dataset.k)});
+['iq','icat'].forEach(i=>$(i).addEventListener('input',renderInv));
+$('blind').addEventListener('change',()=>{MET.blind=$('blind').checked;savePrefs();renderInv()});
+function zerarCont(){if(!confirm('Apagar TODAS as quantidades contadas? Isso não pode ser desfeito.'))return;CONT={};saveCont();renderInv()}
+// ---- box de contagem ----
+function invOpen(key){mList=invVisible().map(x=>x.key);mIdx=mList.indexOf(key);abrirItem(key)}
+function abrirItem(key){const x=IVM.get(key);if(!x)return;mKey=key;const e=cnt(key);
+ $('mT').textContent=x.desc;$('mS').textContent=`${x.cod} · ${x.loc} · ${x.cat}${x.un?' · '+x.un:''}`;
+ $('mSis').innerHTML=MET.blind?'Contagem cega: saldo do sistema oculto.':`Saldo no sistema: <b>${fmt(x.sis)}</b> ${esc(x.un)}`;
+ $('mQ').value=e?String(e.q).replace('.',','):'';$('mO').value=e&&e.o||'';mDifUpd();
+ $('mdl').classList.remove('hide');setTimeout(()=>{$('mQ').focus();$('mQ').select()},30)}
+function mDifUpd(){const x=IVM.get(mKey),q=num($('mQ').value);
+ if(!x||q===null||MET.blind){$('mDif').textContent='';return}
+ const d=q-x.sis,s=Math.abs(d)<1e-6?'ok':d>0?'sobra':'falta';
+ $('mDif').innerHTML=`<span style="color:${CI[s]}">${s==='ok'?'✓ Confere com o sistema':'Diferença: '+sgn(d)+' ('+SI[s].toLowerCase()+')'}</span>`}
+function mFechar(){$('mdl').classList.add('hide');mKey=null}
+function mSalvar(prox){const q=num($('mQ').value);
+ if(q===null||q<0){$('mDif').innerHTML='<span style="color:#ef4444">Digite a quantidade (use 0 se a prateleira estiver vazia).</span>';$('mQ').focus();return}
+ CONT[mKey]={q,t:Date.now(),o:$('mO').value.trim()};saveCont();renderInv();
+ if(prox&&mIdx+1<mList.length){mIdx++;abrirItem(mList[mIdx])}else mFechar()}
+function mLimpar(){delete CONT[mKey];saveCont();renderInv();mFechar()}
+$('mQ').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();mSalvar(true)}});
+$('mQ').addEventListener('input',mDifUpd);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('mdl').classList.contains('hide'))mFechar()});
+$('mdl').addEventListener('click',e=>{if(e.target===$('mdl'))mFechar()});
+// ---- relatório de auditoria ----
+function repRows(){return invItens().map(x=>{const e=cnt(x.key),s=ist(x),d=e?e.q-x.sis:null;return{x,e,s,d,p:e&&x.sis?d/x.sis*100:null}})}
+function kpis(R){const n=R.length,c=R.filter(r=>r.s!=='pend').length,f=k=>R.filter(r=>r.s===k).length;
+ return{n,c,p:n-c,ok:f('ok'),f:f('falta'),s:f('sobra'),ac:c?f('ok')/c*100:null,cob:n?c/n*100:0}}
+const pc=p=>p==null?'—':(p>0?'+':'')+p.toFixed(1)+'%';
+function renderRep(){
+ if(!S.saldo){$('repBody').innerHTML='<div style="color:var(--mut);padding:20px">Carregue a planilha 1 (saldo geral).</div>';return}
+ const R=repRows(),k=kpis(R),agora=new Date().toLocaleString('pt-BR');
+ const tr=(r,cols)=>`<tr>${cols.map(c=>`<td${c[1]?` class="n"`:''}${c[2]?` style="color:${c[2]};font-weight:700"`:''}>${c[0]}</td>`).join('')}</tr>`;
+ const nm=r=>`${esc(r.x.desc.replace(/^MTS /,''))}<br><small>${esc(r.x.cod)}</small>`;
+ const tb=(h,rows,vazio)=>rows.length?`<table class="rt"><thead><tr>${h.map(t=>`<th${/Sist|Cont|Dif/.test(t)?' class="n"':''}>${t}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>`:`<div class="sub">${vazio}</div>`;
+ const div=R.filter(r=>r.s==='falta'||r.s==='sobra').sort((a,b)=>(b.p==null?1e9:Math.abs(b.p))-(a.p==null?1e9:Math.abs(a.p))||Math.abs(b.d)-Math.abs(a.d));
+ const kp=(l,v,c)=>`<div style="--c:${c}"><b>${v}</b><span>${l}</span></div>`;
+ $('repBody').innerHTML=`<div class="paper">
+  <h2>Relatório de auditoria de inventário</h2>
+  <div class="meta">
+   <label>Inventário<input id="rN" value="${esc(MET.nome)}" placeholder="Ex.: Inventário cíclico – novembro"></label>
+   <label>Responsável<input id="rR" value="${esc(MET.resp)}" placeholder="Nome de quem contou"></label>
+   <label>Gerado em<div>${agora}</div></label>
+   <label>Locais<div>${esc(locTxt()||'—')}</div></label>
+   <label>Itens considerados<div>${S.base?'Somente a base dos indicadores':'Todos os itens do saldo'}</div></label>
+   <label>Saldo do sistema<div>${esc(S.saldo.m.nome)} (${esc(S.saldo.m.em)})</div></label>
+  </div>
+  <div class="kp">${kp('Itens no escopo',k.n,'#3b6ef6')}${kp('Contados ('+k.cob.toFixed(0)+'%)',k.c,'#3b6ef6')}${kp('Pendentes',k.p,CI.pend)}${kp('Conferem',k.ok,CI.ok)}${kp('Faltas',k.f,CI.falta)}${kp('Sobras',k.s,CI.sobra)}${kp('Acurácia (conferem / contados)',k.ac==null?'—':k.ac.toFixed(1)+'%',k.ac==null?CI.pend:k.ac>=95?CI.ok:k.ac>=85?CI.sobra:CI.falta)}</div>
+  <div><h3>Divergências (${div.length})</h3>${tb(['Item','Local','Un','Sistema','Contado','Diferença','Dif %','Observação'],div.map(r=>tr(r,[[nm(r)],[esc(r.x.loc)],[esc(r.x.un)],[fmt(r.x.sis),1],[fmt(r.e.q),1],[sgn(r.d),1,CI[r.s]],[pc(r.p),1,CI[r.s]],[esc(r.e.o||'')]])),'Nenhuma divergência encontrada nos itens contados.')}</div>
+  <div><h3>Pendentes de contagem (${k.p})</h3>${tb(['Item','Local','Un','Sistema'],R.filter(r=>r.s==='pend').map(r=>tr(r,[[nm(r)],[esc(r.x.loc)],[esc(r.x.un)],[fmt(r.x.sis),1]])),'Todos os itens foram contados.')}</div>
+  <div><h3>Itens que conferem (${k.ok})</h3>${tb(['Item','Local','Un','Sistema','Contado'],R.filter(r=>r.s==='ok').map(r=>tr(r,[[nm(r)],[esc(r.x.loc)],[esc(r.x.un)],[fmt(r.x.sis),1],[fmt(r.e.q),1]])),'Nenhum item conferido ainda.')}</div>
+  <div class="sig"><div>Responsável pela contagem</div><div>Conferente / Auditor</div><div>Data</div></div>
+ </div>`}
+$('repBody').addEventListener('input',e=>{if(e.target.id==='rN')MET.nome=e.target.value;else if(e.target.id==='rR')MET.resp=e.target.value;else return;savePrefs()});
+function exportar(){
+ const R=repRows(),k=kpis(R),dia=new Date().toISOString().slice(0,10);
+ const head=['Local','Código','Descrição','Categoria','Un','Saldo sistema','Contado','Diferença','Dif %','Situação','Observação','Contado em'];
+ const data=R.map(({x,e,s,d,p})=>[x.loc,x.cod,x.desc,x.cat,x.un,x.sis,e?e.q:'',d==null?'':d,p==null?'':+p.toFixed(2),SI[s],e&&e.o||'',e&&e.t?new Date(e.t).toLocaleString('pt-BR'):'']);
+ const resumo=[['Relatório de auditoria de inventário'],['Inventário',MET.nome],['Responsável',MET.resp],['Gerado em',new Date().toLocaleString('pt-BR')],['Locais',locTxt()||'—'],[],['Itens no escopo',k.n],['Contados',k.c],['Pendentes',k.p],['Conferem',k.ok],['Faltas',k.f],['Sobras',k.s],['Acurácia (conferem / contados)',k.ac==null?'':+k.ac.toFixed(1)+'%']];
+ if(typeof XLSX!=='undefined'){const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(resumo),'Resumo');XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([head,...data]),'Auditoria');XLSX.writeFile(wb,`Auditoria_inventario_${dia}.xlsx`)}
+ else{const csv='\ufeff'+[head,...data].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=`Auditoria_inventario_${dia}.csv`;a.click()}}
 // escolhe colunas/linhas para que todos os marcadores caibam na tela
 function fit(n){
  const g=$('grid'),W=g.clientWidth,H=g.clientHeight,gap=6;if(!n)return;
@@ -296,9 +478,34 @@ document.addEventListener('dragleave',e=>{if(!e.relatedTarget)document.querySele
 document.addEventListener('drop',e=>{e.preventDefault();document.querySelectorAll('.drop').forEach(x=>x.classList.remove('over'));
  const d=e.target.closest&&e.target.closest('.drop');ler(e.dataTransfer.files[0],d?d.dataset.slot:(S.saldo?'base':'saldo'))});
 for(const k of ['saldo','base']){try{const s=JSON.parse(localStorage.getItem(KEY(k))||'null');if(s)S[k]=s}catch(e){}}
-try{const p=JSON.parse(localStorage.getItem(PK)||'null');if(p){if(p.view==='rel'||p.view==='lst')view=p.view;if(p.ord)$('ord').value=p.ord;if(Array.isArray(p.loc))selLoc=new Set(p.loc)}}catch(e){}
+try{const p=JSON.parse(localStorage.getItem(PK)||'null');if(p){if(['rel','lst','inv'].includes(p.view))view=p.view;MET.blind=!!p.blind;MET.nome=p.nome||'';MET.resp=p.resp||'';if(p.ord)$('ord').value=p.ord;if(Array.isArray(p.loc))selLoc=new Set(p.loc)}}catch(e){}
+try{CONT=JSON.parse(localStorage.getItem(CK)||'{}')||{}}catch(e){CONT={}}
 fixSel();
 paint();
+
+// CARREGAMENTO AUTOMÁTICO DO GITHUB (NUVEM)
+async function carregarDadosNuvem() {
+  const arquivos = [
+    { url: 'saldo.xlsx', slot: 'saldo', nome: 'saldo.xlsx (Nuvem)' },
+    { url: 'base.xlsx',  slot: 'base',  nome: 'base.xlsx (Nuvem)' }
+  ];
+
+  for (const item of arquivos) {
+    if (!S[item.slot]) {
+      try {
+        const resp = await fetch(item.url + '?v=' + Date.now());
+        if (resp.ok) {
+          const buffer = await resp.arrayBuffer();
+          processar(new Uint8Array(buffer), item.nome, item.slot);
+        }
+      } catch (err) {
+        console.warn(`Não foi possível carregar ${item.url} automaticamente:`, err);
+      }
+    }
+  }
+}
+
+carregarDadosNuvem();
 </script>
 </body>
 </html>
