@@ -10,17 +10,17 @@
  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg1:#eef2fb;--bg2:#dfe6f4;--tx:#18202f;--mut:#5b6780;--pn:#fff;--pn2:#f4f6fb;--bd:#c6d0e3;--bd2:#d7deec;--trk:#dbe2f0;--nd:#1e293b;--nm:#2b3649;--tick:#8a96ae}}
 *{box-sizing:border-box}
-html,body{height:100%;margin:0}
+html,body{margin:0;min-height:100%}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{display:flex;flex-direction:column;background:radial-gradient(circle at 50% 0,var(--bg1),var(--bg2) 70%);color:var(--tx);font:14px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
-#bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--bd2)}
+body{display:flex;flex-direction:column;background:radial-gradient(circle at 50% 0,var(--bg1),var(--bg2) 70%);color:var(--tx);font:14px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-y:auto;overflow-x:hidden}
+#bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--bd2)}
 h1{font-size:17px;margin:0 8px 0 0;white-space:nowrap}
 .sub{color:var(--mut);font-size:11px}
 button,select,input{font:inherit;border-radius:8px;border:1px solid var(--bd);background:var(--pn2);color:var(--tx);padding:7px 12px}
 button{cursor:pointer;background:#3b6ef6;border-color:#3b6ef6;color:#fff;font-weight:700}
 button.g{background:var(--pn2);color:var(--tx);border-color:var(--bd);font-weight:500}
 button.up{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:5px 12px;font-weight:600}
-button.up small{font-size:10px;font-weight:400;color:var(--mut);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+button.up small{font-size:10px;font-weight:400;color:var(--mut);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 button.up.ok{border-color:#22c55e}
 #q{width:170px}#lim{width:58px;padding:7px 6px}
 .seg{display:flex}.seg button{border-radius:0;white-space:nowrap}.seg button:first-child{border-radius:8px 0 0 8px}.seg button:last-child{border-radius:0 8px 8px 0;border-left:0}
@@ -46,22 +46,21 @@ button.up.ok{border-color:#22c55e}
 .bar>u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--tx);opacity:.55;border-radius:1px}
 .rv{text-align:right;font-weight:800;font-size:16px;white-space:nowrap}.rv em{font-style:normal;color:var(--c)}.rv span{color:var(--mut);font-weight:400}
 .rv small{display:block;font-size:10px;font-weight:700;color:var(--c)}
-@media(max-width:640px){.row{grid-template-columns:1fr auto;grid-template-areas:"d v" "b b";gap:8px 12px}.rd{grid-area:d}.rv{grid-area:v}.bar{grid-area:b}#q{width:100%}}
 .chip{cursor:pointer;display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:var(--pn2);border:1px solid var(--bd);font-weight:600;user-select:none}
 .chip i{width:10px;height:10px;border-radius:50%;background:var(--c)}
 .chip.on{border-color:var(--c);box-shadow:0 0 0 1px var(--c)}
 .sp{flex:1}
 #main{flex:1;min-height:0;padding:10px 12px;display:flex;flex-direction:column}
-#grid{display:grid;flex:1;min-height:0;gap:6px}
-.cell{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;min-width:0;background:var(--pn);border:1px solid var(--bd2);border-radius:12px;padding:4px}
-.cell svg{width:var(--gw);height:auto;display:block}
-.nm{font-size:var(--fs);text-align:center;line-height:1.15;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--nm);padding:0 4px}
+#grid{display:grid;flex:1;min-height:0;gap:8px}
+.cell{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;min-width:0;background:var(--pn);border:1px solid var(--bd2);border-radius:14px;padding:10px 6px;box-shadow:0 2px 4px rgba(0,0,0,0.06)}
+.cell svg{width:var(--gw);max-width:100%;height:auto;display:block}
+.nm{font-size:var(--fs);text-align:center;line-height:1.2;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--nm);padding:4px 4px 0;font-weight:600}
 .nd{transition:transform 1.1s cubic-bezier(.2,1.3,.4,1)}
 #drops{display:flex;gap:18px;margin:auto;flex-wrap:wrap;justify-content:center}
 .drop{width:300px;text-align:center;border:2px dashed var(--bd);border-radius:16px;padding:40px 24px;color:var(--mut);cursor:pointer}
 .drop.over{border-color:#3b6ef6}.drop h2{color:var(--tx);margin:0 0 6px;font-size:16px}.drop p{margin:4px 0}
 .drop b{display:inline-block;background:#3b6ef6;color:#fff;border-radius:99px;padding:2px 10px;margin-bottom:10px}
-#note{font-size:12px;color:#f59e0b;padding:0 4px 6px}
+#note{font-size:12px;color:#f59e0b;padding:4px 8px;background:rgba(245,158,11,0.08);border-radius:8px;margin-bottom:8px}
 .hide{display:none!important}
 input[type=checkbox]{padding:0;width:16px;height:16px;vertical-align:middle;margin-right:4px}
 #inv,#rep{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -70,7 +69,6 @@ input[type=checkbox]{padding:0;width:16px;height:16px;vertical-align:middle;marg
 #ilist{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:2px 2px 10px}
 .irow{grid-template-columns:minmax(0,2fr) 90px 90px 120px;cursor:pointer}.irow:hover{background:var(--pn2)}
 .iv{text-align:right}.iv small{display:block;font-size:9px;color:var(--mut);font-weight:700;letter-spacing:.05em}.iv b{font-size:16px}
-@media(max-width:640px){.irow{grid-template-columns:1fr 1fr 1fr}.irow .rd{grid-column:1/-1}}
 #mdl{position:fixed;inset:0;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50;overflow-y:auto}
 .mbox{background:var(--pn);border:1px solid var(--bd);border-radius:16px;padding:18px;width:100%;max-width:440px;display:flex;flex-direction:column;gap:12px}
 .mbox b#mT{font-size:16px;display:block}.mbox small{color:var(--mut);font-size:12px}
@@ -87,13 +85,16 @@ input[type=checkbox]{padding:0;width:16px;height:16px;vertical-align:middle;marg
 .rt{width:100%;border-collapse:collapse;font-size:12px}.rt th,.rt td{border-bottom:1px solid var(--bd2);padding:6px 8px;text-align:left;vertical-align:top}
 .rt th{color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.05em}.rt .n{text-align:right;white-space:nowrap}.rt small{color:var(--mut)}
 .sig{display:flex;gap:40px;margin-top:30px}.sig div{flex:1;border-top:1px solid var(--tx);padding-top:4px;font-size:11px;color:var(--mut)}
-@media print{
- html:root:not([data-p]){--bg1:#fff;--bg2:#fff;--tx:#000;--mut:#444;--pn:#fff;--pn2:#fff;--bd:#bbb;--bd2:#ccc;--trk:#ddd}
- html,body{height:auto!important;overflow:visible!important;display:block!important;background:#fff!important}
- #bar,.noprint,#mdl{display:none!important}
- #main{display:block!important;padding:0!important}
- #rep,#repBody{display:block!important;overflow:visible!important}
- .rt tr{break-inside:avoid}.meta input{border:0;padding:0;background:none;color:#000}
+
+@media(max-width:768px){
+  body{overflow-y:auto!important;height:auto!important}
+  #main,#res{overflow:visible!important;height:auto!important;flex:none!important}
+  #grid{display:grid!important;grid-template-columns:1fr!important;grid-template-rows:auto!important;gap:14px!important;padding-bottom:30px}
+  .cell{min-height:250px;padding:16px 12px}
+  .cell svg{width:100%!important;max-width:280px!important}
+  .nm{font-size:14px!important;margin-top:6px}
+  .row{grid-template-columns:1fr auto;grid-template-areas:"d v" "b b";gap:8px 12px}.rd{grid-area:d}.rv{grid-area:v}.bar{grid-area:b}#q{width:100%}
+  .irow{grid-template-columns:1fr 1fr 1fr}.irow .rd{grid-column:1/-1}
 }
 </style>
 </head>
@@ -106,19 +107,25 @@ input[type=checkbox]{padding:0;width:16px;height:16px;vertical-align:middle;marg
   <span class="sp"></span>
   <button class="g" onclick="limpar()">Limpar</button>
 </div>
+
+<!-- Banner de Status de Conexão -->
+<div id="statusNuvem" style="background:#1e293b;color:#38bdf8;font-size:12px;padding:8px 16px;border-bottom:1px solid #334155;text-align:center;font-weight:600">
+  🔄 Conectando aos arquivos de estoque...
+</div>
+
 <div id="main">
   <div id="drops">
     <div class="drop" data-slot="saldo"><b>1</b><h2>Saldo geral de estoque</h2><p>Arraste ou clique (.xlsx, .xls, .csv)</p><p class="sub">Colunas: Código, Descrição, Saldo físico, Estoque/local</p></div>
-    <div class="drop" data-slot="base"><b>2</b><h2>Base de dados dos indicadores</h2><p>Arraste ou clique (.xlsx, .xls, .csv)</p><p class="sub">Só os itens desta lista viram indicadores. Colunas: Código ou Descrição; opcionais: Estoque mínimo, Estoque máximo, Categoria</p></div>
+    <div class="drop" data-slot="base"><b>2</b><h2>Base de dados dos indicadores</h2><p>Arraste ou clique (.xlsx, .xls, .csv)</p><p class="sub">Opcional: Estoque mínimo, Estoque máximo, Categoria</p></div>
   </div>
 
   <!-- TELA INICIAL -->
   <div id="home" class="hide"><div class="hbox">
     <div><h2>1 · Como você quer ver?</h2>
       <div class="opts">
-        <button class="opt" id="oRel" onclick="setView('rel')"><b>🕒 Relógios</b><span>Um velocímetro por item, ideal para painel de TV.</span></button>
+        <button class="opt" id="oRel" onclick="setView('rel')"><b>🕒 Relógios</b><span>Um velocímetro por item, ideal para celular ou TV.</span></button>
         <button class="opt" id="oLst" onclick="setView('lst')"><b>☰ Lista</b><span>Uma linha por item com barra de evolução e saldo / mínimo.</span></button>
-        <button class="opt" id="oInv" onclick="setView('inv')"><b>📋 Inventário</b><span>Digite a quantidade real da prateleira de cada item e gere o relatório de auditoria.</span></button>
+        <button class="opt" id="oInv" onclick="setView('inv')"><b>📋 Inventário</b><span>Contagem na prateleira e relatório de auditoria.</span></button>
       </div></div>
     <div><h2>2 · De quais locais de estoque?</h2>
       <p class="sub" id="hCnt"></p>
@@ -126,7 +133,7 @@ input[type=checkbox]{padding:0;width:16px;height:16px;vertical-align:middle;marg
     <button id="go" onclick="abrir()">Ver indicadores →</button>
   </div></div>
 
-  <!-- RESULTADO -->
+  <!-- RESULTADO (DIRETO) -->
   <div id="res" class="hide">
     <div class="rb">
       <button class="g" onclick="inicio()">← Início</button>
@@ -152,7 +159,7 @@ input[type=checkbox]{padding:0;width:16px;height:16px;vertical-align:middle;marg
       <span id="segI"></span>
       <input id="iq" placeholder="Buscar…">
       <select id="icat"></select>
-      <label class="sub" title="Esconde o saldo do sistema para o contador não ser influenciado"><input type="checkbox" id="blind">Contagem cega</label>
+      <label class="sub"><input type="checkbox" id="blind">Contagem cega</label>
       <span class="sp"></span>
       <button class="g" onclick="zerarCont()">Zerar contagens</button>
       <button onclick="relatorio()">📄 Relatório de auditoria</button>
@@ -184,18 +191,47 @@ input[type=checkbox]{padding:0;width:16px;height:16px;vertical-align:middle;marg
   <label>Observação (opcional)<input id="mO" autocomplete="off" placeholder="Ex.: caixa avariada, item em outro local…"></label>
   <div class="mb"><button class="g" onclick="mFechar()">Cancelar</button><button class="g" onclick="mLimpar()">Limpar</button><button class="g" onclick="mSalvar(false)">Salvar</button><button onclick="mSalvar(true)">Salvar e próximo →</button></div>
 </div></div>
+
 <script>
 const $=id=>document.getElementById(id);
 const fmt=n=>(n??0).toLocaleString('pt-BR',{maximumFractionDigits:2});
 const norm=s=>String(s??'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim().replace(/\s+/g,' ');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const num=v=>{if(typeof v==='number')return v;const s=String(v??'').trim();if(!s)return null;const x=parseFloat(s.includes(',')?s.replace(/\./g,'').replace(',','.'):s);return isNaN(x)?null:x};
-const ck=v=>String(v??'').trim().toLowerCase().replace(/^0+(?=.)/,'');
+
+// Conversão ultra flexível de números (trata formatos R$, espaços, pontos de milhar e vírgulas decimais)
+const num=v=>{
+  if(typeof v==='number') return isNaN(v)?0:v;
+  let s=String(v??'').trim().replace(/\s+/g,'').replace(/^R\$\s?/i,'');
+  if(!s) return 0;
+  if(s.includes(',') && s.includes('.')){
+    // Formato 1.250,50
+    s = s.replace(/\./g,'').replace(',','.');
+  } else if(s.includes(',')){
+    // Formato 1250,50
+    s = s.replace(',','.');
+  }
+  const x=parseFloat(s);
+  return isNaN(x)?0:x;
+};
+
+const ck=v=>String(v??'').trim().toLowerCase().replace(/[^a-z0-9]/g,'').replace(/^0+(?=.)/,'');
 const COR={ok:'#22c55e',warn:'#f59e0b',low:'#ef4444',zero:'#ef4444',nf:'#64748b'},NOME={ok:'Normal',warn:'Atenção (até 10% acima do mínimo)',low:'No mínimo ou abaixo',zero:'Zerado',nf:'Sem saldo'};
-const MAP={cod:['codigo do produto','codigo','cod','sku','codigo produto','cod produto'],desc:['descricao','descricao do produto','produto','nome','item'],un:['unidade','un','und'],saldo:['saldo fisico','saldo','quantidade','qtd','saldo atual'],min:['estoque minimo','minimo','min'],max:['estoque maximo','maximo','max','meta','capacidade'],cat:['categoria','grupo','familia','linha'],almox:['estoque/local','estoque / local','estoque local','local de estoque','local estoque','almoxarifado','deposito','armazem']};
+
+// MAP com correspondência estrita e ampla
+const MAP={
+  saldo:['saldo fisico','saldo físico','saldo atual','saldo disponivel','saldo em estoque','saldo contabil','saldo','quantidade','qtde','qtd','estoque atual','estoque fisico','estoque físico','estoque','fisico','fisico atual'],
+  cod:['codigo do produto','código do produto','codigo produto','cod produto','codigo','código','cod','sku','part number','partnumber','referencia','ref','item'],
+  desc:['descricao do produto','descrição do produto','descricao','descrição','descricao item','descrição item','produto','nome do produto','nome produto','nome do item','nome','especificacao','material'],
+  un:['unidade','un','und','medida','um'],
+  min:['estoque minimo','estoque mínimo','minimo','mínimo','min','est min'],
+  max:['estoque maximo','estoque máximo','maximo','máximo','max','meta','capacidade','est max'],
+  cat:['categoria','grupo','familia','família','linha','tipo'],
+  almox:['estoque/local','estoque / local','estoque local','local de estoque','local estoque','almoxarifado','almox','deposito','depósito','armazem','armazém','local','filial']
+};
+
 const S={saldo:null,base:null},KEY=k=>k==='saldo'?'indEstoqueV4_saldo':'indEstoque_'+k,PK='indEstoqueV4_prefs';
 let stF='todos',slotAtual='saldo',scr='res',view='rel',selLoc=null,iF='todos',CONT={},MET={nome:'',resp:'',blind:false};const CK='indEstoqueV5_cont';
-// classifica cabos nos 6 grupos unificados (retorna null se não for um dos grupos)
+
 const GRUPOS=['MTS CABO CAT5E AZ','MTS CABO CAT5E PT','MTS CABO CAT6 SOHO PLUS','MTS CABO CAT6 TODOS EXCETO SOHO PLUS','MTS CABO CFTV PT','MTS CABO CFTV AZ'];
 function grupoCabo(d){
  const t=norm(d);if(!/\bcabo\b/.test(t))return null;
@@ -204,63 +240,234 @@ function grupoCabo(d){
  if(/\bcat\s?5e?\b/.test(t))n=az?GRUPOS[0]:pt?GRUPOS[1]:null;
  else if(/\bcat\s?6[a-z]?\b/.test(t))n=/soho\s*plus/.test(t)?GRUPOS[2]:GRUPOS[3];
  else if(/\bcftv\b/.test(t))n=pt?GRUPOS[4]:az?GRUPOS[5]:null;
- return n?{nome:n,ord:GRUPOS.indexOf(n)}:null}
+ return n?{nome:n,ord:GRUPOS.indexOf(n)}:null;
+}
 function agrupar(rows){
  const G=new Map(),out=[];
- for(const x of rows){const g=grupoCabo(x.desc);if(!g){out.push(x);continue}
-  let o=G.get(g.nome);if(!o){o={cod:'',desc:g.nome,un:'MTS',saldo:0,min:0,max:0,cat:'Cabos',nf:true,grp:true,ord:g.ord,n:0};G.set(g.nome,o)}
-  o.saldo+=x.saldo;o.min+=x.min;o.max+=x.max;o.nf=o.nf&&x.nf;o.n++}
- for(const o of G.values())o.cod=o.n+' item(ns) unificados';
- return out.concat([...G.values()])}
-function categoria(d){const t=norm(d).replace(/^mts\s+/,'');
+ for(const x of rows){
+  const g=grupoCabo(x.desc);
+  if(!g){out.push(x);continue;}
+  let o=G.get(g.nome);
+  if(!o){o={cod:'',desc:g.nome,un:'MTS',saldo:0,min:0,max:0,cat:'Cabos',nf:true,grp:true,ord:g.ord,n:0};G.set(g.nome,o);}
+  o.saldo+=x.saldo;o.min+=x.min;o.max+=x.max;o.nf=o.nf&&x.nf;o.n++;
+ }
+ for(const o of G.values()) o.cod=o.n+' item(ns) unificados';
+ return out.concat([...G.values()]);
+}
+
+function categoria(d){
+ const t=norm(d).replace(/^mts\s+/,'');
  for(const [a,b] of [['cabo','Cabos'],['conector','Conectores'],['fita','Fitas'],['parafuso','Parafusos'],['abracadeira','Abraçadeiras']])if(t.startsWith(a))return b;
- const w=t.split(' ')[0]||'outros';return w[0].toUpperCase()+w.slice(1)}
+ const w=t.split(' ')[0]||'Outros';return w[0].toUpperCase()+w.slice(1);
+}
+
 function pick(s){slotAtual=s;$('file').click()}
+
+// Leitura inteligente de colunas com prioridade Exata > Contém
+function mapearColunas(heads){
+  const f={};
+  const normHeads = heads.map(h=>norm(h));
+
+  // 1ª passada: Correspondência EXATA
+  for(const k in MAP){
+    f[k] = normHeads.findIndex(h => MAP[k].includes(h));
+  }
+
+  // 2ª passada: Correspondência por prefixo/includes sem sobrescrever colunas já detectadas
+  for(const k in MAP){
+    if(f[k] < 0){
+      f[k] = normHeads.findIndex((h, idx) => {
+        // Não rouba a coluna de Código se estiver procurando Descrição e vice-versa
+        if(Object.values(f).includes(idx)) return false;
+        return MAP[k].some(m => h.includes(m) || m.includes(h));
+      });
+    }
+  }
+
+  // Se código e descrição apontaram para a mesma coluna, desempata
+  if(f.cod >= 0 && f.cod === f.desc){
+    const h = normHeads[f.cod];
+    if(h.includes('desc') || h.includes('nome')) f.cod = -1;
+    else f.desc = -1;
+  }
+
+  return f;
+}
+
 function processar(data,nome,slot){
- let aoa;try{const wb=XLSX.read(data,{type:'array'});aoa=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''})}catch(e){return alert('Não consegui ler o arquivo.')}
- const names=Object.values(MAP).flat();
- let h=aoa.findIndex((r,i)=>i<15&&r.some(c=>names.includes(norm(c))));if(h<0)h=0;
- const heads=(aoa[h]||[]).map(String),body=aoa.slice(h+1).filter(r=>r.some(c=>c!==''));
- if(!body.length)return alert('Planilha vazia.');
- const f={};for(const k in MAP){const i=heads.findIndex(c=>MAP[k].includes(norm(c)));f[k]=i}
- const g=(r,k)=>f[k]>=0?r[f[k]]:'';
- if(f.cod<0&&f.desc<0)return alert('Não encontrei a coluna "Código" nem "Descrição".');
- if(slot==='saldo'&&f.saldo<0)return alert('Não encontrei a coluna "Saldo físico".');
- let src=body;
-let r;
- if(slot==='saldo')r=src.map(x=>({cod:String(g(x,'cod')).trim(),desc:String(g(x,'desc')).trim(),un:String(g(x,'un')).trim(),saldo:num(g(x,'saldo'))??0,min:num(g(x,'min'))||0,loc:f.almox>=0?String(g(x,'almox')).trim():''}));
- else r=body.map(x=>({cod:String(g(x,'cod')).trim(),desc:String(g(x,'desc')).trim(),min:num(g(x,'min'))||0,max:num(g(x,'max'))||0,cat:String(g(x,'cat')).trim()}));
+ let wb;
+ try{
+  wb=XLSX.read(data,{type:'array',cellDates:true,raw:false});
+ }catch(e){
+  try{wb=XLSX.read(data,{type:'binary',raw:false})}catch(e2){return alert('Não consegui ler o arquivo.');}
+ }
+ if(!wb||!wb.SheetNames||!wb.SheetNames.length)return alert('Planilha sem abas legíveis.');
+
+ let melhorAba=null, melhorAoa=null, melhorH=-1, melhorScore=-1, melhorBody=[], melhorF={};
+
+ for(const sheetName of wb.SheetNames){
+  const sheet=wb.Sheets[sheetName];if(!sheet)continue;
+  const aoa=XLSX.utils.sheet_to_json(sheet,{header:1,defval:'',blankrows:false});
+  if(!aoa||!aoa.length)continue;
+
+  for(let i=0;i<Math.min(aoa.length,40);i++){
+   const heads = (aoa[i]||[]).map(String);
+   const f = mapearColunas(heads);
+   let score = 0;
+   if(f.saldo >= 0) score += 4;
+   if(f.cod >= 0) score += 3;
+   if(f.desc >= 0) score += 3;
+   if(f.almox >= 0) score += 1;
+
+   if(score > melhorScore){
+    const bodyCand = aoa.slice(i+1).filter(r=>r&&r.some(c=>String(c).trim()!==''));
+    if(bodyCand.length > 0){
+      melhorScore = score;
+      melhorH = i;
+      melhorAba = sheetName;
+      melhorAoa = aoa;
+      melhorBody = bodyCand;
+      melhorF = f;
+    }
+   }
+  }
+ }
+
+ if(!melhorBody.length){
+  return alert(`A planilha ${nome} parece estar vazia ou os títulos das colunas não foram identificados.`);
+ }
+
+ const heads = (melhorAoa[melhorH]||[]).map(String);
+ const f = melhorF;
+ const g=(r,k)=>(f[k]>=0&&r[f[k]]!==undefined?r[f[k]]:'');
+
+ let r;
+ if(slot==='saldo'){
+  r=melhorBody.map(x=>{
+    const codVal = String(g(x,'cod')).trim();
+    const descVal = String(g(x,'desc')).trim();
+    const saldoVal = num(g(x,'saldo'));
+    const unVal = String(g(x,'un')).trim() || 'UN';
+    const locVal = f.almox>=0 ? String(g(x,'almox')).trim() : '';
+
+    return {
+      cod: codVal || descVal,
+      desc: descVal || codVal,
+      un: unVal,
+      saldo: saldoVal,
+      min: num(g(x,'min')),
+      loc: locVal
+    };
+  });
+ }else{
+  r=melhorBody.map(x=>({
+    cod: String(g(x,'cod')).trim(),
+    desc: String(g(x,'desc')).trim(),
+    min: num(g(x,'min')),
+    max: num(g(x,'max')),
+    cat: String(g(x,'cat')).trim()
+  }));
+ }
+
  r=r.filter(x=>x.cod||x.desc);
+ if(!r.length) return alert('Nenhum item com código ou descrição preenchido.');
+
  const nl=slot==='saldo'&&f.almox>=0?new Set(r.map(x=>x.loc)).size:0;
- const m={nome,em:new Date().toLocaleString('pt-BR'),n:r.length,flt:nl?` · ${nl} local(is)`:''};
+ const m={nome:`${nome} (${melhorAba})`,em:new Date().toLocaleString('pt-BR'),n:r.length,flt:nl?` · ${nl} local(is)`:''};
  S[slot]={r,m};
- try{localStorage.setItem(KEY(slot),JSON.stringify(S[slot]))}catch(e){}
- if(slot==='saldo')fixSel();
- paint()}
-// cruza a base dos indicadores com o saldo geral
+
+ try{localStorage.setItem(KEY(slot),JSON.stringify(S[slot]));}catch(e){}
+ if(slot==='saldo') fixSel();
+
+ scr='res'; // Direto para os indicadores
+ paint();
+}
+
+// Cruzamento robusto entre Saldo Geral e Base de Indicadores
 function itens(){return agrupar(itens0())}
 function itens0(){
- const sal=S.saldo?S.saldo.r.filter(s=>!selLoc||selLoc.has(s.loc||'Sem local')):[],byC=new Map(),byD=new Map();
- for(const s of sal){ // soma saldos repetidos (vários depósitos/linhas)
-  const add=(m,k)=>{if(!k)return;const o=m.get(k);if(o){o.saldo+=s.saldo;o.min=o.min||s.min}else m.set(k,{...s})};
-  add(byC,ck(s.cod));add(byD,norm(s.desc))}
- // evita contar duas vezes: usa índice por código e, se faltar, por descrição
- const uniq=new Map();for(const s of sal){const k=ck(s.cod)||norm(s.desc);const o=uniq.get(k);if(o){o.saldo+=s.saldo;o.min=o.min||s.min}else uniq.set(k,{...s})}
- const byCode=new Map(),byDesc=new Map();for(const s of uniq.values()){if(ck(s.cod))byCode.set(ck(s.cod),s);if(s.desc)byDesc.set(norm(s.desc),s)}
- if(!S.base)return sal.length?[...uniq.values()].map(s=>({cod:s.cod,desc:s.desc,un:s.un,saldo:s.saldo,min:s.min,max:0,cat:categoria(s.desc),nf:false})):[];
- return S.base.r.map(b=>{const s=(ck(b.cod)&&byCode.get(ck(b.cod)))||(b.desc&&byDesc.get(norm(b.desc)))||null;
-  const desc=b.desc||(s&&s.desc)||b.cod;
-  return{cod:b.cod||(s&&s.cod)||'',desc,un:s?s.un:'',saldo:s?s.saldo:0,min:b.min||(s&&s.min)||0,max:b.max||0,cat:b.cat||categoria(desc),nf:!s}})}
+ if(!S.saldo && !S.base) return [];
+
+ // 1. Itens do saldo (com fallback de local caso o filtro atual resulte em 0 itens)
+ let sal = [];
+ if(S.saldo && S.saldo.r){
+   sal = S.saldo.r.filter(s => !selLoc || selLoc.has(s.loc || 'Sem local'));
+   if(sal.length === 0 && S.saldo.r.length > 0){
+     // Fallback: se o filtro selLoc filtrou tudo, usa todos os locais para nunca deixar zerado!
+     sal = S.saldo.r;
+   }
+ }
+
+ const byCode = new Map(), byDesc = new Map(), byNormDesc = new Map();
+ for(const s of sal){
+   const c = ck(s.cod);
+   const d = norm(s.desc);
+   if(c){
+     const cur = byCode.get(c);
+     if(cur){ cur.saldo += s.saldo; cur.min = cur.min || s.min; }
+     else byCode.set(c, {...s});
+   }
+   if(d){
+     const cur = byDesc.get(d);
+     if(cur){ cur.saldo += s.saldo; cur.min = cur.min || s.min; }
+     else byDesc.set(d, {...s});
+   }
+ }
+
+ // Lista única de todos os itens com saldo
+ const uniqSaldo = new Map();
+ for(const s of sal){
+   const key = ck(s.cod) || norm(s.desc);
+   const o = uniqSaldo.get(key);
+   if(o){ o.saldo += s.saldo; o.min = o.min || s.min; }
+   else uniqSaldo.set(key, {...s});
+ }
+
+ // Se não há base de dados, mostra TODOS os itens do saldo com seus respectivos saldos reais!
+ if(!S.base){
+   return [...uniqSaldo.values()].map(s=>({
+     cod: s.cod,
+     desc: s.desc,
+     un: s.un || 'UN',
+     saldo: s.saldo,
+     min: s.min,
+     max: 0,
+     cat: categoria(s.desc),
+     nf: false
+   }));
+ }
+
+ // Se há base de dados, cruza os itens da base com o saldo
+ return S.base.r.map(b=>{
+   const codKey = ck(b.cod);
+   const descKey = norm(b.desc);
+   const s = (codKey && byCode.get(codKey)) || (descKey && byDesc.get(descKey)) || null;
+
+   const finalDesc = b.desc || (s && s.desc) || b.cod;
+   return {
+     cod: b.cod || (s && s.cod) || '',
+     desc: finalDesc,
+     un: (s && s.un) || 'UN',
+     saldo: s ? s.saldo : 0,
+     min: b.min || (s && s.min) || 0,
+     max: b.max || 0,
+     cat: b.cat || categoria(finalDesc),
+     nf: !s // Sem saldo no local selecionado
+   };
+ });
+}
+
 const lim=()=>num($('lim').value)||0,ref=x=>x.min>0?x.min:lim();
 const st=x=>x.nf?'nf':x.saldo<=0?'zero':x.saldo<=ref(x)?'low':x.saldo<=ref(x)*1.1?'warn':'ok';
-// ponto no arco: f=0 (E, esquerda) ... f=1 (F, direita)
+
 const P=(f,r)=>{const a=Math.PI*(1-f);return[(100+r*Math.cos(a)).toFixed(1),(100-r*Math.sin(a)).toFixed(1)]};
 const arc=(f1,f2,r,c,w)=>{if(f2-f1<=0)return'';const[a,b]=P(f1,r),[x,y]=P(f2,r);return`<path d="M${a} ${b}A${r} ${r} 0 0 1 ${x} ${y}" fill="none" stroke="${c}" stroke-width="${w}"/>`};
+
 function gauge(x,scale){
  const s=st(x),sc=x.max>0?x.max:scale,f=Math.min(Math.max(x.saldo/sc,0),1),fl=Math.min(ref(x)/sc,1),fw=Math.min(ref(x)*1.1/sc,1),nc=x.nf||s==='ok'?'var(--nd)':COR[s];
  let t='';for(let i=0;i<=4;i++){const[a,b]=P(i/4,70),[c,d]=P(i/4,62);t+=`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="var(--tick)" stroke-width="1.5"/>`}
  const[ex,ey]=P(0,50),[fx,fy]=P(1,50);
- const val=x.nf?'—':fmt(x.saldo);
+ const val=x.nf?'0':fmt(x.saldo);
  return `<svg viewBox="0 -26 200 144">
  ${arc(0,1,82,'var(--trk)',14)}${x.nf?'':arc(0,fl,82,'#7f1d1d',14)+arc(fl,fw,82,'#92400e',14)+arc(fw,1,82,'#15803d',14)+arc(0,f,82,COR[s],14)}
  ${t}
@@ -270,77 +477,106 @@ function gauge(x,scale){
  <circle cx="100" cy="100" r="7" fill="${nc}"/><circle cx="100" cy="100" r="3" fill="var(--pn)"/>
  <text x="93" y="-6" text-anchor="end" font-size="22" font-weight="800" fill="${COR[s]}">${val}</text><text x="100" y="-6" text-anchor="middle" font-size="22" font-weight="300" fill="var(--mut)">/</text><text x="107" y="-6" text-anchor="start" font-size="22" font-weight="800" fill="var(--tx)">${fmt(ref(x))}</text>
  <text x="93" y="6" text-anchor="end" font-size="9" fill="var(--mut)">${x.nf?'SEM SALDO':'SALDO'}${x.un&&!x.nf?' ('+esc(x.un)+')':''}</text><text x="107" y="6" font-size="9" fill="var(--mut)">MÍNIMO</text>
- 
  </svg>`}
-// ---------- locais de estoque ----------
+
 function allLocs(){const m=new Map();for(const s of S.saldo?S.saldo.r:[]){const k=s.loc||'Sem local';m.set(k,(m.get(k)||0)+1)}return[...m].map(([nome,n])=>({nome,n})).sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR'))}
-function fixSel(){const L=allLocs().map(l=>l.nome);if(!L.length){selLoc=null;return}
+
+function fixSel(){
+ const L=allLocs().map(l=>l.nome);if(!L.length){selLoc=null;return}
  let s=selLoc?new Set([...selLoc].filter(n=>L.includes(n))):new Set();
- if(!s.size){const e=L.find(n=>norm(n)==='almox ecn');s=new Set(e?[e]:L)} // padrão: ALMOX ECN, se existir
- selLoc=s}
+ if(!s.size){
+   const e=L.find(n=>norm(n).includes('ecn')||norm(n).includes('almox'));
+   s=new Set(e?[e]:L);
+ }
+ selLoc=s;
+}
+
 function locChips(){const L=allLocs();if(!L.length)return'';const all=selLoc.size===L.length;
  return `<span class="chip ${all?'on':''}" style="--c:#3b6ef6" data-all="1"><i></i>Todos <small>${L.length}</small></span>`+
  L.map(l=>`<span class="chip ${!all&&selLoc.has(l.nome)?'on':''}" style="--c:#3b6ef6" data-l="${esc(l.nome)}"><i></i>${esc(l.nome)} <small>${l.n}</small></span>`).join('')}
+
 function locChanged(){savePrefs();redraw()}
 document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest('[data-l],[data-all]');if(!c||!S.saldo)return;
  const L=allLocs().map(l=>l.nome);
  if(c.dataset.all!==undefined)selLoc=new Set(L);
  else{const n=c.dataset.l;
-  if(selLoc.size===L.length)selLoc=new Set([n]);      // saindo de "Todos": fica só o clicado
+  if(selLoc.size===L.length)selLoc=new Set([n]);
   else if(selLoc.has(n)){selLoc.delete(n);if(!selLoc.size)selLoc=new Set(L)}
   else selLoc.add(n)}
  locChanged()});
+
 function savePrefs(){try{localStorage.setItem(PK,JSON.stringify({view,ord:$('ord').value,loc:selLoc?[...selLoc]:null,blind:MET.blind,nome:MET.nome,resp:MET.resp}))}catch(e){}}
-// ---------- navegação ----------
+
 function segHTML(){return'<span class="seg">'+[['rel','🕒 Relógios'],['lst','☰ Lista'],['inv','📋 Inventário']].map(([k,l])=>`<button class="g ${view===k?'on':''}" onclick="setView('${k}')">${l}</button>`).join('')+'</span>'}
-function setView(v){if(v==='inv'&&!S.saldo&&scr!=='home')return alert('Carregue a planilha 1 (saldo geral) para fazer o inventário.');
- view=v;savePrefs();if(scr!=='home')scr=v==='inv'?'inv':'res';paint()}
-function abrir(){if(view==='inv'&&!S.saldo)return alert('Carregue a planilha 1 (saldo geral) para fazer o inventário.');scr=view==='inv'?'inv':'res';paint()}
+function setView(v){view=v;savePrefs();scr=v==='inv'?'inv':'res';paint()}
+function abrir(){scr=view==='inv'?'inv':'res';paint()}
 function inicio(){scr='home';paint()}
 function relatorio(){scr='rep';paint()}
+
 function paint(){
- for(const k of ['saldo','base']){const s=S[k];$(k==='saldo'?'tSaldo':'tBase').textContent=s?`${s.m.nome} · ${s.m.n} itens${s.m.flt||''}`:'não carregado';$(k==='saldo'?'bSaldo':'bBase').classList.toggle('ok',!!s)}
+ for(const k of ['saldo','base']){
+   const s=S[k];
+   $(k==='saldo'?'tSaldo':'tBase').textContent=s?`${s.m.nome} · ${s.m.n} itens${s.m.flt||''}`:'não carregado';
+   $(k==='saldo'?'bSaldo':'bBase').classList.toggle('ok',!!s);
+ }
  const any=S.saldo||S.base;
  $('drops').classList.toggle('hide',!!any);
  for(const k of ['home','res','inv','rep'])$(k).classList.toggle('hide',!any||scr!==k);
- if(any)redraw()}
+ if(any) redraw();
+}
+
 function redraw(){scr==='home'?renderHome():scr==='inv'?renderInv():scr==='rep'?renderRep():refresh()}
 function renderHome(){
- $('oRel').classList.toggle('on',view==='rel');$('oLst').classList.toggle('on',view==='lst');$('oInv').classList.toggle('on',view==='inv');$('go').textContent=view==='inv'?'Abrir inventário →':'Ver indicadores →';
+ $('oRel').classList.toggle('on',view==='rel');$('oLst').classList.toggle('on',view==='lst');$('oInv').classList.toggle('on',view==='inv');
  const L=allLocs();
- if(!L.length){$('hCnt').textContent=S.saldo?'A planilha de saldo não tem a coluna "Estoque/local": todos os saldos serão somados.':'Carregue a planilha 1 (saldo geral) para poder escolher os locais.';$('hLoc').innerHTML=''}
- else{$('hCnt').textContent=selLoc.size===L.length?'Todos os locais selecionados. Clique em um ou mais locais para filtrar.':`${selLoc.size} de ${L.length} locais selecionados.`;$('hLoc').innerHTML=locChips()}}
+ if(!L.length){$('hCnt').textContent=S.saldo?'Todos os saldos somados.':'Carregue o saldo para escolher os locais.';$('hLoc').innerHTML=''}
+ else{$('hCnt').textContent=`${selLoc.size} de ${L.length} locais selecionados.`;$('hLoc').innerHTML=locChips()}}
+
 const SH={ok:'Normal',warn:'Atenção',low:'No mínimo',zero:'Zerado',nf:'Sem saldo'};
 function locTxt(){const L=allLocs();if(!L.length)return'';return selLoc.size===L.length?`todos os locais (${L.length})`:[...selLoc].join(', ')}
-function buildCats(){const cur=$('cat').value,rows=itens();
+
+function buildCats(){
+ const cur=$('cat').value,rows=itens();
  $('cat').innerHTML='<option value="">Todas as categorias</option>'+[...new Set(rows.map(x=>x.cat))].sort().map(c=>`<option>${esc(c)}</option>`).join('');
- if([...$('cat').options].some(o=>o.value===cur))$('cat').value=cur}
+ if([...$('cat').options].some(o=>o.value===cur))$('cat').value=cur;
+}
+
 function refresh(){$('rLoc').innerHTML=locChips();$('rLoc').classList.toggle('hide',!allLocs().length);buildCats();render()}
+
 const crit=x=>x.nf?1e12:x.saldo<=0?-1:ref(x)>0?x.saldo/ref(x):1e6;
 function lstRow(x){
  const s=st(x),r=ref(x),sc=x.max>0?x.max:(r>0?r*2:Math.max(x.saldo,1)),f=x.nf?0:Math.min(Math.max(x.saldo/sc,0),1),fm=r>0?Math.min(r/sc,1):0;
  return `<div class="row" style="--c:${COR[s]}" title="${esc(x.cod)} · ${esc(x.cat)} · ${NOME[s]}"><div class="rd"><b>${esc(x.grp?x.desc:x.desc.replace(/^MTS /,''))}</b><small>${esc(x.cod)} · ${esc(x.cat)}${x.un&&!x.nf?' · '+esc(x.un):''}</small></div>`+
  `<div class="bar"><i data-w="${(f*100).toFixed(1)}"></i>${fm>0&&fm<1?`<u style="left:calc(${(fm*100).toFixed(1)}% - 1px)"></u>`:''}</div>`+
- `<div class="rv"><em>${x.nf?'—':fmt(x.saldo)}</em><span> / ${fmt(r)}</span><small>${SH[s]}</small></div></div>`}
+ `<div class="rv"><em>${x.nf?'0':fmt(x.saldo)}</em><span> / ${fmt(r)}</span><small>${SH[s]}</small></div></div>`}
+
 function render(){
- const rows=itens();if(!rows.length&&!(S.saldo||S.base))return;
+ const rows=itens();
+ if(!rows.length&&!(S.saldo||S.base)) return;
  $('segR').innerHTML=segHTML();$('esc').classList.toggle('hide',view!=='rel');
  const L=allLocs();
- const nf=rows.filter(x=>x.nf).length;
- const msg=!S.base?'Carregue a planilha 2 (base dos indicadores) para ver só os itens desejados. Por enquanto, todos os itens do saldo.':!S.saldo?'Carregue a planilha 1 (saldo geral) para preencher os saldos.':nf?`${nf} item(ns) da base não foram encontrados no saldo dos locais selecionados (mostrados como "sem saldo").`:'';
+
+ const comSaldo = rows.filter(x=>x.saldo>0).length;
+ const msg=!S.base?`Mostrando todos os ${rows.length} produtos da planilha de saldo (${comSaldo} com saldo positivo).` : (comSaldo===0?`⚠️ Atenção: Todos os ${rows.length} itens estão com saldo 0. Verifique se o nome do local ou código dos itens corresponde à planilha de saldo.`:'');
  $('note').textContent=msg;$('note').classList.toggle('hide',!msg);
- $('info').textContent=`${rows.length} itens`+(L.length?' · '+(selLoc.size===L.length?'todos os locais':selLoc.size+' de '+L.length+' locais'):'');$('info').title=locTxt();
+
+ $('info').textContent=`${rows.length} itens (${comSaldo} c/ saldo)`+(L.length?' · '+(selLoc.size===L.length?'todos os locais':selLoc.size+' de '+L.length+' locais'):'');
+ $('info').title=locTxt();
+
  const q=norm($('q').value),cf=$('cat').value;
  const base=rows.filter(x=>(!cf||x.cat===cf)&&(!q||norm(x.desc+' '+x.cod).includes(q)));
  const c={ok:0,warn:0,low:0,zero:0,nf:0};base.forEach(x=>c[st(x)]++);
  const ch=[['todos','Todos',base.length,'#3b6ef6'],['ok','Normal',c.ok,COR.ok],['warn','Atenção',c.warn,COR.warn],['low','No mínimo',c.low,COR.low],['zero','Zerado',c.zero,COR.zero]];
  if(c.nf)ch.push(['nf','Sem saldo',c.nf,COR.nf]);
  $('chips').innerHTML=ch.map(([k,l,v,col])=>`<span class="chip ${stF===k?'on':''}" style="--c:${col}" onclick="stF='${k}';render()"><i></i>${l} ${v}</span>`).join('');
+
  const mxCat={};let mxAll=1;rows.forEach(x=>{mxCat[x.cat]=Math.max(mxCat[x.cat]||1,x.saldo);mxAll=Math.max(mxAll,x.saldo)});
  const byCrit=$('ord').value==='crit';
  const list=base.filter(x=>stF==='todos'||st(x)===stF).sort(byCrit?(a,b)=>crit(a)-crit(b)||a.desc.localeCompare(b.desc):(a,b)=>a.cat.localeCompare(b.cat)||(a.ord??999)-(b.ord??999)||a.desc.localeCompare(b.desc));
- const vazio='<div style="margin:auto;color:var(--mut)">Nenhum item encontrado.</div>';
+
+ const vazio='<div style="margin:auto;color:var(--mut);padding:30px">Nenhum item com saldo encontrado nos filtros selecionados.</div>';
  $('grid').classList.toggle('hide',view!=='rel');$('list').classList.toggle('hide',view!=='lst');
+
  if(view==='rel'){
   $('grid').innerHTML=list.map(x=>`<div class="cell" title="${esc(x.cod)} · ${esc(x.cat)} · ${NOME[st(x)]}${x.min?' · mín '+fmt(x.min):''}">${gauge(x,$('esc').value==='all'?mxAll:mxCat[x.cat])}<div class="nm">${esc(x.grp?x.desc:x.desc.replace(/^MTS /,''))}</div></div>`).join('')||vazio;
   fit(list.length);
@@ -349,38 +585,48 @@ function render(){
   let last=null,h='';for(const x of list){if(!byCrit&&x.cat!==last){h+=`<div class="gh">${esc(x.cat)}</div>`;last=x.cat}h+=lstRow(x)}
   $('list').innerHTML=h||vazio;
   requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('#list .bar>i').forEach(i=>i.style.width=i.dataset.w+'%')));
- }}
-// ---------- INVENTÁRIO ----------
+ }
+}
+
+// INVENTÁRIO
 const SI={pend:'Pendente',ok:'Confere',falta:'Falta',sobra:'Sobra'},CI={pend:'#64748b',ok:'#22c55e',falta:'#ef4444',sobra:'#f59e0b'};
 let IVM=new Map(),mList=[],mIdx=-1,mKey=null;
 const cnt=k=>CONT[k]&&CONT[k].q!=null?CONT[k]:null,sgn=d=>(d>0?'+':'')+fmt(d);
 function ist(x){const e=cnt(x.key);if(!e)return'pend';const d=e.q-x.sis;return Math.abs(d)<1e-6?'ok':d>0?'sobra':'falta'}
 function saveCont(){try{localStorage.setItem(CK,JSON.stringify(CONT))}catch(e){}}
-// um item por (local + código): é onde a prateleira fisicamente está
+
 function invItens(){
  if(!S.saldo)return[];
  const base=S.base?S.base.r:null;let bc=null,bd=null;
  if(base){bc=new Map();bd=new Map();for(const b of base){if(ck(b.cod))bc.set(ck(b.cod),b);if(b.desc)bd.set(norm(b.desc),b)}}
  const m=new Map();
- for(const s of S.saldo.r){const loc=s.loc||'Sem local';if(selLoc&&!selLoc.has(loc))continue;
+ for(const s of S.saldo.r){
+  const loc=s.loc||'Sem local';if(selLoc&&!selLoc.has(loc))continue;
   let b=null;if(base){b=(ck(s.cod)&&bc.get(ck(s.cod)))||(s.desc&&bd.get(norm(s.desc)))||null;if(!b)continue}
   const key=loc+'|'+(ck(s.cod)||norm(s.desc)),o=m.get(key);
-  if(o)o.sis+=s.saldo;else m.set(key,{key,loc,cod:s.cod,desc:s.desc||(b&&b.desc)||s.cod,un:s.un,sis:s.saldo,cat:(b&&b.cat)||categoria(s.desc||s.cod)})}
- return[...m.values()]}
+  if(o)o.sis+=s.saldo;else m.set(key,{key,loc,cod:s.cod,desc:s.desc||(b&&b.desc)||s.cod,un:s.un,sis:s.saldo,cat:(b&&b.cat)||categoria(s.desc||s.cod)})
+ }
+ return[...m.values()];
+}
+
 function invVisible(ignoreStatus){
  const q=norm($('iq').value),cf=$('icat').value;
  let l=[...IVM.values()].filter(x=>(!cf||x.cat===cf)&&(!q||norm(x.desc+' '+x.cod+' '+x.loc).includes(q)));
  if(!ignoreStatus&&iF!=='todos')l=l.filter(x=>{const s=ist(x);return iF==='cont'?s!=='pend':s===iF});
- return l.sort((a,b)=>a.loc.localeCompare(b.loc,'pt-BR')||a.cat.localeCompare(b.cat)||a.desc.localeCompare(b.desc))}
+ return l.sort((a,b)=>a.loc.localeCompare(b.loc,'pt-BR')||a.cat.localeCompare(b.cat)||a.desc.localeCompare(b.desc));
+}
+
 function invRow(x){
  const s=ist(x),e=cnt(x.key),b=MET.blind,col=b?(e?'#3b6ef6':CI.pend):CI[s],d=e?e.q-x.sis:0;
  return `<div class="row irow" data-k="${esc(x.key)}" style="--c:${col}"><div class="rd"><b>${esc(x.desc.replace(/^MTS /,''))}</b><small>${esc(x.cod)} · ${esc(x.loc)}${x.un?' · '+esc(x.un):''}${e&&e.o?' · 📝 '+esc(e.o):''}</small></div>`+
  `<div class="iv"><small>SISTEMA</small><b>${b?'•••':fmt(x.sis)}</b></div>`+
  `<div class="iv"><small>CONTADO</small><b style="color:${e?'var(--tx)':'var(--mut)'}">${e?fmt(e.q):'—'}</b></div>`+
- `<div class="iv"><small>${b?'STATUS':'DIFERENÇA'}</small><b style="color:${col}">${b?(e?'Contado':'Pendente'):e?(s==='ok'?'✓ Confere':sgn(d)):'Pendente'}</b></div></div>`}
+ `<div class="iv"><small>${b?'STATUS':'DIFERENÇA'}</small><b style="color:${col}">${b?(e?'Contado':'Pendente'):e?(s==='ok'?'✓ Confere':sgn(d)):'Pendente'}</b></div></div>`;
+}
+
 function renderInv(){
  $('segI').innerHTML=segHTML();$('blind').checked=MET.blind;
- if(!S.saldo){$('ilist').innerHTML='<div style="margin:auto;color:var(--mut)">Carregue a planilha 1 (saldo geral) para fazer o inventário.</div>';return}
+ if(!S.saldo){$('ilist').innerHTML='<div style="margin:auto;color:var(--mut)">Carregue a planilha de saldo geral.</div>';return}
  const all=invItens();IVM=new Map(all.map(x=>[x.key,x]));
  $('iLoc').innerHTML=locChips();$('iLoc').classList.toggle('hide',!allLocs().length);
  const cur=$('icat').value;$('icat').innerHTML='<option value="">Todas as categorias</option>'+[...new Set(all.map(x=>x.cat))].sort().map(c=>`<option>${esc(c)}</option>`).join('');
@@ -393,25 +639,28 @@ function renderInv(){
  if(!ch.some(a=>a[0]===iF))iF='todos';
  $('iChips').innerHTML=ch.map(([k,l,v,col])=>`<span class="chip ${iF===k?'on':''}" style="--c:${col}" onclick="iF='${k}';renderInv()"><i></i>${l} ${v}</span>`).join('');
  let h='',last=null;for(const x of invVisible()){const g=x.loc+' · '+x.cat;if(g!==last){h+=`<div class="gh">${esc(g)}</div>`;last=g}h+=invRow(x)}
- $('ilist').innerHTML=h||'<div style="margin:auto;color:var(--mut)">Nenhum item encontrado.</div>'}
+ $('ilist').innerHTML=h||'<div style="margin:auto;color:var(--mut)">Nenhum item encontrado.</div>';
+}
+
 $('ilist').addEventListener('click',e=>{const r=e.target.closest('.irow');if(r)invOpen(r.dataset.k)});
 ['iq','icat'].forEach(i=>$(i).addEventListener('input',renderInv));
 $('blind').addEventListener('change',()=>{MET.blind=$('blind').checked;savePrefs();renderInv()});
 function zerarCont(){if(!confirm('Apagar TODAS as quantidades contadas? Isso não pode ser desfeito.'))return;CONT={};saveCont();renderInv()}
-// ---- box de contagem ----
+
 function invOpen(key){mList=invVisible().map(x=>x.key);mIdx=mList.indexOf(key);abrirItem(key)}
 function abrirItem(key){const x=IVM.get(key);if(!x)return;mKey=key;const e=cnt(key);
  $('mT').textContent=x.desc;$('mS').textContent=`${x.cod} · ${x.loc} · ${x.cat}${x.un?' · '+x.un:''}`;
  $('mSis').innerHTML=MET.blind?'Contagem cega: saldo do sistema oculto.':`Saldo no sistema: <b>${fmt(x.sis)}</b> ${esc(x.un)}`;
  $('mQ').value=e?String(e.q).replace('.',','):'';$('mO').value=e&&e.o||'';mDifUpd();
  $('mdl').classList.remove('hide');setTimeout(()=>{$('mQ').focus();$('mQ').select()},30)}
+
 function mDifUpd(){const x=IVM.get(mKey),q=num($('mQ').value);
  if(!x||q===null||MET.blind){$('mDif').textContent='';return}
  const d=q-x.sis,s=Math.abs(d)<1e-6?'ok':d>0?'sobra':'falta';
  $('mDif').innerHTML=`<span style="color:${CI[s]}">${s==='ok'?'✓ Confere com o sistema':'Diferença: '+sgn(d)+' ('+SI[s].toLowerCase()+')'}</span>`}
 function mFechar(){$('mdl').classList.add('hide');mKey=null}
 function mSalvar(prox){const q=num($('mQ').value);
- if(q===null||q<0){$('mDif').innerHTML='<span style="color:#ef4444">Digite a quantidade (use 0 se a prateleira estiver vazia).</span>';$('mQ').focus();return}
+ if(q===null||q<0){$('mDif').innerHTML='<span style="color:#ef4444">Digite a quantidade.</span>';$('mQ').focus();return}
  CONT[mKey]={q,t:Date.now(),o:$('mO').value.trim()};saveCont();renderInv();
  if(prox&&mIdx+1<mList.length){mIdx++;abrirItem(mList[mIdx])}else mFechar()}
 function mLimpar(){delete CONT[mKey];saveCont();renderInv();mFechar()}
@@ -419,13 +668,14 @@ $('mQ').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();mS
 $('mQ').addEventListener('input',mDifUpd);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('mdl').classList.contains('hide'))mFechar()});
 $('mdl').addEventListener('click',e=>{if(e.target===$('mdl'))mFechar()});
-// ---- relatório de auditoria ----
+
 function repRows(){return invItens().map(x=>{const e=cnt(x.key),s=ist(x),d=e?e.q-x.sis:null;return{x,e,s,d,p:e&&x.sis?d/x.sis*100:null}})}
 function kpis(R){const n=R.length,c=R.filter(r=>r.s!=='pend').length,f=k=>R.filter(r=>r.s===k).length;
  return{n,c,p:n-c,ok:f('ok'),f:f('falta'),s:f('sobra'),ac:c?f('ok')/c*100:null,cob:n?c/n*100:0}}
 const pc=p=>p==null?'—':(p>0?'+':'')+p.toFixed(1)+'%';
+
 function renderRep(){
- if(!S.saldo){$('repBody').innerHTML='<div style="color:var(--mut);padding:20px">Carregue a planilha 1 (saldo geral).</div>';return}
+ if(!S.saldo){$('repBody').innerHTML='<div style="color:var(--mut);padding:20px">Carregue a planilha de saldo geral.</div>';return}
  const R=repRows(),k=kpis(R),agora=new Date().toLocaleString('pt-BR');
  const tr=(r,cols)=>`<tr>${cols.map(c=>`<td${c[1]?` class="n"`:''}${c[2]?` style="color:${c[2]};font-weight:700"`:''}>${c[0]}</td>`).join('')}</tr>`;
  const nm=r=>`${esc(r.x.desc.replace(/^MTS /,''))}<br><small>${esc(r.x.cod)}</small>`;
@@ -435,89 +685,106 @@ function renderRep(){
  $('repBody').innerHTML=`<div class="paper">
   <h2>Relatório de auditoria de inventário</h2>
   <div class="meta">
-   <label>Inventário<input id="rN" value="${esc(MET.nome)}" placeholder="Ex.: Inventário cíclico – novembro"></label>
-   <label>Responsável<input id="rR" value="${esc(MET.resp)}" placeholder="Nome de quem contou"></label>
+   <label>Inventário<input id="rN" value="${esc(MET.nome)}" placeholder="Ex.: Inventário cíclico"></label>
+   <label>Responsável<input id="rR" value="${esc(MET.resp)}" placeholder="Nome"></label>
    <label>Gerado em<div>${agora}</div></label>
-   <label>Locais<div>${esc(locTxt()||'—')}</div></label>
-   <label>Itens considerados<div>${S.base?'Somente a base dos indicadores':'Todos os itens do saldo'}</div></label>
-   <label>Saldo do sistema<div>${esc(S.saldo.m.nome)} (${esc(S.saldo.m.em)})</div></label>
+   <label>Locais<div>${esc(locTxt()||'Todos')}</div></label>
+   <label>Saldo do sistema<div>${esc(S.saldo.m.nome)}</div></label>
   </div>
-  <div class="kp">${kp('Itens no escopo',k.n,'#3b6ef6')}${kp('Contados ('+k.cob.toFixed(0)+'%)',k.c,'#3b6ef6')}${kp('Pendentes',k.p,CI.pend)}${kp('Conferem',k.ok,CI.ok)}${kp('Faltas',k.f,CI.falta)}${kp('Sobras',k.s,CI.sobra)}${kp('Acurácia (conferem / contados)',k.ac==null?'—':k.ac.toFixed(1)+'%',k.ac==null?CI.pend:k.ac>=95?CI.ok:k.ac>=85?CI.sobra:CI.falta)}</div>
-  <div><h3>Divergências (${div.length})</h3>${tb(['Item','Local','Un','Sistema','Contado','Diferença','Dif %','Observação'],div.map(r=>tr(r,[[nm(r)],[esc(r.x.loc)],[esc(r.x.un)],[fmt(r.x.sis),1],[fmt(r.e.q),1],[sgn(r.d),1,CI[r.s]],[pc(r.p),1,CI[r.s]],[esc(r.e.o||'')]])),'Nenhuma divergência encontrada nos itens contados.')}</div>
-  <div><h3>Pendentes de contagem (${k.p})</h3>${tb(['Item','Local','Un','Sistema'],R.filter(r=>r.s==='pend').map(r=>tr(r,[[nm(r)],[esc(r.x.loc)],[esc(r.x.un)],[fmt(r.x.sis),1]])),'Todos os itens foram contados.')}</div>
-  <div><h3>Itens que conferem (${k.ok})</h3>${tb(['Item','Local','Un','Sistema','Contado'],R.filter(r=>r.s==='ok').map(r=>tr(r,[[nm(r)],[esc(r.x.loc)],[esc(r.x.un)],[fmt(r.x.sis),1],[fmt(r.e.q),1]])),'Nenhum item conferido ainda.')}</div>
-  <div class="sig"><div>Responsável pela contagem</div><div>Conferente / Auditor</div><div>Data</div></div>
- </div>`}
-$('repBody').addEventListener('input',e=>{if(e.target.id==='rN')MET.nome=e.target.value;else if(e.target.id==='rR')MET.resp=e.target.value;else return;savePrefs()});
+  <div class="kp">${kp('Itens no escopo',k.n,'#3b6ef6')}${kp('Contados ('+k.cob.toFixed(0)+'%)',k.c,'#3b6ef6')}${kp('Pendentes',k.p,CI.pend)}${kp('Conferem',k.ok,CI.ok)}${kp('Faltas',k.f,CI.falta)}${kp('Sobras',k.s,CI.sobra)}${kp('Acurácia',k.ac==null?'—':k.ac.toFixed(1)+'%',k.ac==null?CI.pend:k.ac>=95?CI.ok:k.ac>=85?CI.sobra:CI.falta)}</div>
+  <div><h3>Divergências (${div.length})</h3>${tb(['Item','Local','Un','Sistema','Contado','Diferença','Dif %','Observação'],div.map(r=>tr(r,[[nm(r)],[esc(r.x.loc)],[esc(r.x.un)],[fmt(r.x.sis),1],[fmt(r.e.q),1],[sgn(r.d),1,CI[r.s]],[pc(r.p),1,CI[r.s]],[esc(r.e.o||'')]])),'Nenhuma divergência.')}</div>
+  <div><h3>Pendentes de contagem (${k.p})</h3>${tb(['Item','Local','Un','Sistema'],R.filter(r=>r.s==='pend').map(r=>tr(r,[[nm(r)],[esc(r.x.loc)],[esc(r.x.un)],[fmt(r.x.sis),1]])),'Todos contados.')}</div>
+  <div><h3>Itens que conferem (${k.ok})</h3>${tb(['Item','Local','Un','Sistema','Contado'],R.filter(r=>r.s==='ok').map(r=>tr(r,[[nm(r)],[esc(r.x.loc)],[esc(r.x.un)],[fmt(r.x.sis),1],[fmt(r.e.q),1]])),'Nenhum conferido.')}</div>
+ </div>`;
+}
+$('repBody').addEventListener('input',e=>{if(e.target.id==='rN')MET.nome=e.target.value;else if(e.target.id==='rR')MET.resp=e.target.value;savePrefs()});
+
 function exportar(){
  const R=repRows(),k=kpis(R),dia=new Date().toISOString().slice(0,10);
  const head=['Local','Código','Descrição','Categoria','Un','Saldo sistema','Contado','Diferença','Dif %','Situação','Observação','Contado em'];
  const data=R.map(({x,e,s,d,p})=>[x.loc,x.cod,x.desc,x.cat,x.un,x.sis,e?e.q:'',d==null?'':d,p==null?'':+p.toFixed(2),SI[s],e&&e.o||'',e&&e.t?new Date(e.t).toLocaleString('pt-BR'):'']);
- const resumo=[['Relatório de auditoria de inventário'],['Inventário',MET.nome],['Responsável',MET.resp],['Gerado em',new Date().toLocaleString('pt-BR')],['Locais',locTxt()||'—'],[],['Itens no escopo',k.n],['Contados',k.c],['Pendentes',k.p],['Conferem',k.ok],['Faltas',k.f],['Sobras',k.s],['Acurácia (conferem / contados)',k.ac==null?'':+k.ac.toFixed(1)+'%']];
- if(typeof XLSX!=='undefined'){const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(resumo),'Resumo');XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([head,...data]),'Auditoria');XLSX.writeFile(wb,`Auditoria_inventario_${dia}.xlsx`)}
- else{const csv='\ufeff'+[head,...data].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=`Auditoria_inventario_${dia}.csv`;a.click()}}
-// escolhe colunas/linhas para que todos os marcadores caibam na tela
-function fit(n){
- const g=$('grid'),W=g.clientWidth,H=g.clientHeight,gap=6;if(!n)return;
- let best=null;
- for(let c=1;c<=n;c++){const r=Math.ceil(n/c),cw=(W-gap*(c-1))/c,ch=(H-gap*(r-1))/r;
-  const fs=Math.max(9,Math.min(13,cw/17)),svgH=ch-fs*2.5-14,gw=Math.min(cw-12,svgH*200/144);
-  if(!best||gw>best.gw)best={c,r,gw,fs}}
- g.style.gridTemplateColumns=`repeat(${best.c},1fr)`;g.style.gridTemplateRows=`repeat(${best.r},1fr)`;
- g.style.setProperty('--gw',Math.max(best.gw,40)+'px');g.style.setProperty('--fs',best.fs+'px');
+ const resumo=[['Relatório de auditoria de inventário'],['Inventário',MET.nome],['Responsável',MET.resp],['Gerado em',new Date().toLocaleString('pt-BR')],['Locais',locTxt()||'Todos'],[],['Itens no escopo',k.n],['Contados',k.c],['Pendentes',k.p],['Conferem',k.ok],['Faltas',k.f],['Sobras',k.s],['Acurácia',k.ac==null?'':+k.ac.toFixed(1)+'%']];
+ const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(resumo),'Resumo');XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([head,...data]),'Auditoria');XLSX.writeFile(wb,`Auditoria_inventario_${dia}.xlsx`);
 }
-function limpar(){if(!confirm('Limpar as duas planilhas carregadas?'))return;try{localStorage.removeItem(KEY('saldo'));localStorage.removeItem(KEY('base'));localStorage.removeItem(PK);localStorage.removeItem('indEstoqueV3b_saldo')}catch(e){}location.reload()}
+
+function fit(n){
+ const g=$('grid');if(!n||!g)return;
+ const isMobile=window.innerWidth<=768;
+ if(isMobile){
+  g.style.gridTemplateColumns='1fr';
+  g.style.gridTemplateRows='auto';
+  g.style.setProperty('--gw','260px');
+  g.style.setProperty('--fs','13px');
+  return;
+ }
+ const W=g.clientWidth,H=g.clientHeight,gap=6;
+ let best=null;
+ for(let c=1;c<=n;c++){
+  const r=Math.ceil(n/c),cw=(W-gap*(c-1))/c,ch=(H-gap*(r-1))/r;
+  const fs=Math.max(9,Math.min(13,cw/17)),svgH=ch-fs*2.5-14,gw=Math.min(cw-12,svgH*200/144);
+  if(!best||gw>best.gw)best={c,r,gw,fs};
+ }
+ g.style.gridTemplateColumns=`repeat(${best.c},1fr)`;
+ g.style.gridTemplateRows=`repeat(${best.r},1fr)`;
+ g.style.setProperty('--gw',Math.max(best.gw,40)+'px');
+ g.style.setProperty('--fs',best.fs+'px');
+}
+
+function limpar(){
+ if(!confirm('Deseja limpar todos os dados em cache e recarregar?')) return;
+ try{
+   localStorage.clear();
+ }catch(e){}
+ location.reload();
+}
+
 function ler(f,slot){if(!f)return;const r=new FileReader();r.onload=e=>processar(new Uint8Array(e.target.result),f.name,slot);r.readAsArrayBuffer(f)}
 $('file').onchange=e=>{ler(e.target.files[0],slotAtual);e.target.value=''};
 ['q','cat','lim','esc'].forEach(i=>$(i).addEventListener('input',render));
 $('ord').addEventListener('input',()=>{savePrefs();render()});
 addEventListener('resize',()=>scr==='res'&&(S.saldo||S.base)&&render());
+
 document.querySelectorAll('.drop').forEach(d=>d.onclick=()=>pick(d.dataset.slot));
 document.addEventListener('dragover',e=>{e.preventDefault();const d=e.target.closest&&e.target.closest('.drop');document.querySelectorAll('.drop').forEach(x=>x.classList.toggle('over',x===d))});
 document.addEventListener('dragleave',e=>{if(!e.relatedTarget)document.querySelectorAll('.drop').forEach(x=>x.classList.remove('over'))});
-document.addEventListener('drop',e=>{e.preventDefault();document.querySelectorAll('.drop').forEach(x=>x.classList.remove('over'));
- const d=e.target.closest&&e.target.closest('.drop');ler(e.dataTransfer.files[0],d?d.dataset.slot:(S.saldo?'base':'saldo'))});
+document.addEventListener('drop',e=>{
+ e.preventDefault();document.querySelectorAll('.drop').forEach(x=>x.classList.remove('over'));
+ const d=e.target.closest&&e.target.closest('.drop');ler(e.dataTransfer.files[0],d?d.dataset.slot:(S.saldo?'base':'saldo'));
+});
+
+// Inicialização
 for(const k of ['saldo','base']){try{const s=JSON.parse(localStorage.getItem(KEY(k))||'null');if(s)S[k]=s}catch(e){}}
 try{const p=JSON.parse(localStorage.getItem(PK)||'null');if(p){if(['rel','lst','inv'].includes(p.view))view=p.view;MET.blind=!!p.blind;MET.nome=p.nome||'';MET.resp=p.resp||'';if(p.ord)$('ord').value=p.ord;if(Array.isArray(p.loc))selLoc=new Set(p.loc)}}catch(e){}
 try{CONT=JSON.parse(localStorage.getItem(CK)||'{}')||{}}catch(e){CONT={}}
+
 fixSel();
+scr='res';
 paint();
 
-// CARREGAMENTO AUTOMÁTICO INTELIGENTE (GITHUB PAGES / NUVEM)
+// CARREGAMENTO AUTOMÁTICO VIA GITHUB PAGES (NUVEM)
 async function carregarDadosNuvem() {
-  const statusMsg = document.createElement('div');
-  statusMsg.id = 'statusNuvem';
-  statusMsg.style.cssText = 'background:#1e293b;color:#38bdf8;font-size:12px;padding:8px 16px;border-bottom:1px solid #334155;text-align:center;font-weight:600';
-  statusMsg.textContent = '🔄 Conectando ao repositório para carregar planilhas...';
-  const bar = document.getElementById('bar');
-  if(bar && bar.parentNode) bar.parentNode.insertBefore(statusMsg, bar.nextSibling);
+  const statusMsg = document.getElementById('statusNuvem');
 
-  // Variações de nomes aceitas (para evitar erros com maiúsculas/minúsculas no Linux do GitHub)
   const slotsConfig = [
-    { slot: 'saldo', nomes: ['saldo.xlsx', 'Saldo.xlsx', 'SALDO.xlsx', 'saldo.csv', 'Saldo.csv', 'saldos.xlsx'] },
-    { slot: 'base',  nomes: ['base.xlsx', 'Base.xlsx', 'BASE.xlsx', 'base.csv', 'Base.csv'] }
+    { slot: 'saldo', nomes: ['saldo.xlsx', 'Saldo.xlsx', 'SALDO.xlsx', 'saldo.csv', 'Saldo.csv', 'saldos.xlsx', 'saldodiadia.xlsx'] },
+    { slot: 'base',  nomes: ['base.xlsx', 'Base.xlsx', 'BASE.xlsx', 'base.csv', 'Base.csv', 'base_indicadores.xlsx'] }
   ];
 
   let carregouAlgum = false;
 
   for (const cfg of slotsConfig) {
-    if (S[cfg.slot]) {
-      carregouAlgum = true;
-      continue;
-    }
-
     for (const nomeArq of cfg.nomes) {
       try {
         const resp = await fetch(nomeArq + '?v=' + Date.now());
         if (resp.ok) {
           const buffer = await resp.arrayBuffer();
-          // Verifica se não é uma página HTML de erro 404 disfarçada
+          // Ignora páginas 404 em HTML
           const firstBytes = new Uint8Array(buffer.slice(0, 10));
           const textHeader = String.fromCharCode(...firstBytes).toLowerCase();
           if (textHeader.includes('<!doc') || textHeader.includes('<html')) {
-            continue; // É página 404 em HTML do GitHub
+            continue;
           }
-          processar(new Uint8Array(buffer), nomeArq + ' (Nuvem)', cfg.slot);
+          processar(new Uint8Array(buffer), nomeArq, cfg.slot);
           carregouAlgum = true;
           break;
         }
@@ -526,16 +793,18 @@ async function carregarDadosNuvem() {
   }
 
   if (carregouAlgum || S.saldo || S.base) {
+    const itensTotal = itens();
+    const comSaldo = itensTotal.filter(x=>x.saldo>0).length;
     statusMsg.style.background = '#064e3b';
     statusMsg.style.color = '#34d399';
-    statusMsg.textContent = '✅ Planilhas carregadas com sucesso! Exibindo indicadores.';
+    statusMsg.textContent = `✅ Planilhas ativas: ${itensTotal.length} produtos carregados (${comSaldo} itens com saldo em estoque).`;
     scr = 'res';
     paint();
-    setTimeout(() => { if (statusMsg.parentNode) statusMsg.parentNode.removeChild(statusMsg); }, 3500);
+    setTimeout(() => { if (statusMsg && statusMsg.parentNode) statusMsg.style.display='none'; }, 5000);
   } else {
     statusMsg.style.background = '#7c2d12';
     statusMsg.style.color = '#fdba74';
-    statusMsg.innerHTML = '⚠️ Nenhuma planilha encontrada no GitHub. Verifique se subiu <b>saldo.xlsx</b> e <b>base.xlsx</b> na mesma pasta do index.html (ou clique nos botões acima para subir do dispositivo).';
+    statusMsg.innerHTML = '⚠️ Arquivo não localizado automaticamente. Suba <b>saldo.xlsx</b> no repositório do GitHub ou clique no botão acima <b>1 · Saldo geral</b> para selecionar do seu aparelho.';
   }
 }
 
