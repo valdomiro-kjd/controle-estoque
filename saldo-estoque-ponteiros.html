@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estoque · Marcadores</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{display:flex;flex-direction:column;background:radial-gradient(circle at 50% 0,#1c2540,#0b0f19 70%);color:#e8ecf3;font:14px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+#bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 16px;border-bottom:1px solid #243049}
+h1{font-size:17px;margin:0 8px 0 0;white-space:nowrap}
+.sub{color:#8d99b0;font-size:11px}
+button,select,input{font:inherit;border-radius:8px;border:1px solid #2c3a57;background:#161e30;color:#e8ecf3;padding:7px 12px}
+button{cursor:pointer;background:#3b6ef6;border-color:#3b6ef6;font-weight:700}
+button.g{background:#161e30;border-color:#2c3a57;font-weight:500}
+#q{width:170px}#lim{width:58px;padding:7px 6px}
+.chip{cursor:pointer;display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:#161e30;border:1px solid #2c3a57;font-weight:600;user-select:none}
+.chip i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.chip.on{border-color:var(--c);box-shadow:0 0 0 1px var(--c)}
+.sp{flex:1}
+#main{flex:1;min-height:0;padding:10px 12px}
+#grid{display:grid;height:100%;gap:6px}
+.cell{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;min-width:0;background:#121a2b;border:1px solid #1f2b45;border-radius:12px;padding:4px}
+.cell svg{width:var(--gw);height:auto;display:block}
+.nm{font-size:var(--fs);text-align:center;line-height:1.15;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#cfd7e6;padding:0 4px}
+.nd{transition:transform 1.1s cubic-bezier(.2,1.3,.4,1)}
+#drop{margin:auto;text-align:center;border:2px dashed #2c3a57;border-radius:16px;padding:60px 70px;color:#8d99b0;cursor:pointer}
+#drop.over{border-color:#3b6ef6}#drop h2{color:#e8ecf3;margin:0 0 6px}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div id="bar">
+  <h1>⛽ Estoque</h1>
+  <input type="file" id="file" accept=".xlsx,.xls,.csv" class="hide">
+  <button onclick="file.click()">Adicionar planilha</button>
+  <span id="ctl" class="hide" style="display:contents">
+    <input id="q" placeholder="Buscar…">
+    <select id="cat"></select>
+    <select id="esc"><option value="cat">Escala: por categoria</option><option value="all">Escala: geral</option></select>
+    <label class="sub">Baixo ≤ <input id="lim" type="number" min="0" value="10"></label>
+    <span id="chips" style="display:contents"></span>
+  </span>
+  <span class="sp"></span>
+  <span class="sub" id="info">Nenhum arquivo carregado</span>
+  <button class="g" onclick="limpar()">Limpar</button>
+</div>
+<div id="main">
+  <div id="drop"><h2>Arraste a planilha aqui</h2><p>ou clique para escolher (.xlsx, .xls, .csv)</p></div>
+  <div id="grid" class="hide"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const fmt=n=>(n??0).toLocaleString('pt-BR',{maximumFractionDigits:2});
+const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+const num=v=>{if(typeof v==='number')return v;const x=parseFloat(String(v??'').replace(/\./g,'').replace(',','.'));return isNaN(x)?null:x};
+const COR={ok:'#22c55e',low:'#f59e0b',zero:'#ef4444'},NOME={ok:'Normal',low:'Baixo',zero:'Zerado'};
+let rows=[],stF='todos',KEY='saldoEstoqueV1';
+const MAP={cod:['codigo do produto','codigo','sku'],desc:['descricao','produto','nome'],un:['unidade','un'],saldo:['saldo fisico','saldo','quantidade'],min:['estoque minimo']};
+function categoria(d){const t=norm(d).replace(/^mts\s+/,'');
+ for(const [a,b] of [['cabo','Cabos'],['conector','Conectores'],['fita','Fitas'],['parafuso','Parafusos'],['abracadeira','Abraçadeiras']])if(t.startsWith(a))return b;
+ const w=t.split(' ')[0]||'outros';return w[0].toUpperCase()+w.slice(1)}
+function processar(data,nome){
+ const wb=XLSX.read(data,{type:'array'});const js=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+ if(!js.length)return alert('Planilha vazia.');
+ const cols=Object.keys(js[0]),f={};for(const k in MAP)f[k]=cols.find(c=>MAP[k].includes(norm(c)));
+ if(!f.desc||!f.saldo)return alert('Não encontrei as colunas "Descrição" e "Saldo físico".');
+ const r=js.map(o=>({cod:o[f.cod]||'',desc:String(o[f.desc]).trim(),un:o[f.un]||'',saldo:num(o[f.saldo])??0,min:f.min?num(o[f.min])||0:0,cat:categoria(o[f.desc])})).filter(x=>x.desc);
+ const m={nome,em:new Date().toLocaleString('pt-BR')};
+ try{localStorage.setItem(KEY,JSON.stringify({r,m}))}catch(e){}
+ iniciar(r,m)}
+function iniciar(r,m){rows=r;$('drop').classList.add('hide');$('grid').classList.remove('hide');$('ctl').classList.remove('hide');
+ $('info').textContent=`${m.nome} · ${m.em}`;
+ $('cat').innerHTML='<option value="">Todas as categorias</option>'+[...new Set(r.map(x=>x.cat))].sort().map(c=>`<option>${c}</option>`).join('');render()}
+const lim=()=>num($('lim').value)||0, ref=x=>x.min>0?x.min:lim();
+const st=x=>x.saldo<=0?'zero':x.saldo<=ref(x)?'low':'ok';
+// ponto no arco: f=0 (E, esquerda) ... f=1 (F, direita)
+const P=(f,r)=>{const a=Math.PI*(1-f);return[(100+r*Math.cos(a)).toFixed(1),(100-r*Math.sin(a)).toFixed(1)]};
+const arc=(f1,f2,r,c,w)=>{if(f2-f1<=0)return'';const[a,b]=P(f1,r),[x,y]=P(f2,r);return`<path d="M${a} ${b}A${r} ${r} 0 0 1 ${x} ${y}" fill="none" stroke="${c}" stroke-width="${w}"/>`};
+function gauge(x,scale){
+ const s=st(x),f=Math.min(Math.max(x.saldo/scale,0),1),fl=Math.min(ref(x)/scale,1);
+ let t='';for(let i=0;i<=4;i++){const[a,b]=P(i/4,70),[c,d]=P(i/4,62);t+=`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#6b7893" stroke-width="1.5"/>`}
+ const[ex,ey]=P(0,50),[fx,fy]=P(1,50);
+ return `<svg viewBox="0 -26 200 144">
+ ${arc(0,1,82,'#1d2740',14)}${arc(0,fl,82,'#b45309',14)}${arc(fl,1,82,'#15803d',14)}${arc(0,f,82,COR[s],14).replace('stroke-width="14"','stroke-width="14" opacity=".95"')}
+ <path d="M18 100A82 82 0 0 1 182 100" fill="none" stroke="#0b0f19" stroke-width="2" opacity=".0"/>
+ ${t}
+ <text x="${ex}" y="${(+ey+13).toFixed(1)}" font-size="11" font-weight="700" fill="#ef4444" text-anchor="middle">E</text>
+ <text x="${fx}" y="${(+fy+13).toFixed(1)}" font-size="11" font-weight="700" fill="#22c55e" text-anchor="middle">F</text>
+ <g class="nd" data-a="${(-90+180*f).toFixed(1)}" style="transform-origin:100px 100px;transform:rotate(-90deg)"><polygon points="97,100 100,34 103,100" fill="#f1f5f9"/></g>
+ <circle cx="100" cy="100" r="7" fill="#f1f5f9"/><circle cx="100" cy="100" r="3" fill="#121a2b"/>
+ <text x="100" y="-4" text-anchor="middle" font-size="24" font-weight="800" fill="${COR[s]}">${fmt(x.saldo)}<tspan font-size="12" font-weight="500" fill="#8d99b0"> ${x.un}</tspan></text>
+ </svg>`}
+function render(){
+ const q=norm($('q').value),cf=$('cat').value;
+ const base=rows.filter(x=>(!cf||x.cat===cf)&&(!q||norm(x.desc+' '+x.cod).includes(q)));
+ const c={ok:0,low:0,zero:0};base.forEach(x=>c[st(x)]++);
+ $('chips').innerHTML=[['todos','Todos',base.length,'#3b6ef6'],['ok','Normal',c.ok,COR.ok],['low','Baixo',c.low,COR.low],['zero','Zerado',c.zero,COR.zero]]
+  .map(([k,l,v,col])=>`<span class="chip ${stF===k?'on':''}" style="--c:${col}" onclick="stF='${k}';render()"><i></i>${l} ${v}</span>`).join('');
+ const mxCat={};let mxAll=1;rows.forEach(x=>{mxCat[x.cat]=Math.max(mxCat[x.cat]||1,x.saldo);mxAll=Math.max(mxAll,x.saldo)});
+ const list=base.filter(x=>stF==='todos'||st(x)===stF).sort((a,b)=>a.cat.localeCompare(b.cat)||a.desc.localeCompare(b.desc));
+ $('grid').innerHTML=list.map(x=>`<div class="cell" title="${x.cod} · ${x.cat} · ${NOME[st(x)]}">${gauge(x,$('esc').value==='all'?mxAll:mxCat[x.cat])}<div class="nm">${x.desc.replace(/^MTS /,'')}</div></div>`).join('')||'<div style="margin:auto;color:#8d99b0">Nenhum item encontrado.</div>';
+ fit(list.length);
+ requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.nd').forEach(n=>n.style.transform=`rotate(${n.dataset.a}deg)`)));
+}
+// escolhe colunas/linhas para que todos os marcadores caibam na tela
+function fit(n){
+ const g=$('grid'),W=g.clientWidth,H=g.clientHeight,gap=6;if(!n)return;
+ let best=null;
+ for(let c=1;c<=n;c++){const r=Math.ceil(n/c),cw=(W-gap*(c-1))/c,ch=(H-gap*(r-1))/r;
+  const fs=Math.max(9,Math.min(13,cw/17)),svgH=ch-fs*2.5-14,gw=Math.min(cw-12,svgH*200/144);
+  if(!best||gw>best.gw)best={c,r,gw,fs}}
+ g.style.gridTemplateColumns=`repeat(${best.c},1fr)`;g.style.gridTemplateRows=`repeat(${best.r},1fr)`;
+ g.style.setProperty('--gw',Math.max(best.gw,40)+'px');g.style.setProperty('--fs',best.fs+'px');
+}
+function limpar(){if(!confirm('Limpar os dados carregados?'))return;try{localStorage.removeItem(KEY)}catch(e){}location.reload()}
+function ler(f){if(!f)return;const r=new FileReader();r.onload=e=>processar(new Uint8Array(e.target.result),f.name);r.readAsArrayBuffer(f)}
+$('file').onchange=e=>{ler(e.target.files[0]);e.target.value=''};
+['q','cat','lim','esc'].forEach(i=>$(i).addEventListener('input',render));
+addEventListener('resize',()=>rows.length&&render());
+$('drop').onclick=()=>$('file').click();
+document.addEventListener('dragover',e=>{e.preventDefault();$('drop').classList.add('over')});
+document.addEventListener('dragleave',()=>$('drop').classList.remove('over'));
+document.addEventListener('drop',e=>{e.preventDefault();$('drop').classList.remove('over');ler(e.dataTransfer.files[0])});
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)iniciar(s.r,s.m)}catch(e){}
+</script>
+</body>
+</html>
